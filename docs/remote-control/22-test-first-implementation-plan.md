@@ -8,9 +8,9 @@ Command assumptions: repository root; Python 3.11/3.13 via `uv`; Node 22; Postgr
 
 ### Task 1 — Canonical v1 schema and cross-runtime validation
 
-Files: `apps/remote-control-protocol/{package.json,tsconfig.json}`, `src/{index,types,validate,version}.ts`, `src/validate.test.ts`, `fixtures/v1/*.json`, `docs/remote-control/schemas/v1/{envelope,snapshot,event,capability}.schema.json`, `tests/remote_control/test_protocol_schema.py`, `remote_control/{__init__,models,protocol}.py`, `package-lock.json`.
+Files: `apps/remote-control-protocol/{package.json,tsconfig.json}`, `src/{index,types,validate,version}.ts`, `src/validate.test.ts`, `scripts/copy-schemas.mjs`, `fixtures/v1/*.json`, `docs/remote-control/schemas/v1/{envelope,snapshot,event,capability,command,pairing}.schema.json`, `tests/remote_control/test_protocol_schema.py`, `remote_control/{__init__,models,protocol}.py`, `package-lock.json`.
 
-1. Add valid/invalid fixture tests in TS and Python; run `npm test --workspace apps/remote-control-protocol -- --run src/validate.test.ts` and `uv run pytest -q tests/remote_control/test_protocol_schema.py`. Expected red: package/module/validator absent and fixtures cannot validate.
+1. Add valid/invalid fixture tests in TS and Python; run `npm test --workspace apps/remote-control-protocol -- --run src/validate.test.ts` and `uv run --extra remote-control pytest -q tests/remote_control/test_protocol_schema.py`. Expected red: package/module/validator absent and fixtures cannot validate.
 2. Add schemas, minimal types/validators, and schema-byte-identity check.
 3. Rerun both commands. Expected green: identical accept/reject result for every fixture, zero failures.
 4. Run `npm run check --workspace apps/remote-control-protocol && uv run ruff check remote_control tests/remote_control`.

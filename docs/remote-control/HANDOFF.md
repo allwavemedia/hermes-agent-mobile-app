@@ -1,10 +1,10 @@
 # Hermes Android Remote Control — Development Handoff
 
-Last refreshed: 2026-07-26 04:19 EDT
+Last refreshed: 2026-07-26 04:43 EDT
 
 Refresh owner: the active implementation agent
 
-Status: implementation authorized; Milestone 1 / Task 1 setup in progress
+Status: implementation authorized; Milestone 1 / Task 1 verified and ready to commit
 
 This is the canonical restart document for the implementation phase. It is intentionally operational and must describe the repository as it exists, not as the plan expects it to exist.
 
@@ -46,7 +46,7 @@ Current slice: [Milestone 1, Task 1](22-test-first-implementation-plan.md#task-1
 
 Task 1 execution corrections identified during critical review:
 
-- Add `jsonschema==4.26.0` as a direct Python dependency because production Python code will import it; it currently appears only transitively in `uv.lock`.
+- Add `jsonschema==4.26.0` as a direct dependency of a dedicated `remote-control` extra because production Python code imports it; do not rely on its incidental presence in the development-only MCP stack or enlarge the default core install.
 - Make initial red tests fail by assertion on missing/unsupported behavior, not by test-runner configuration or uncaught import errors.
 - Canonical schemas already exist under `docs/remote-control/schemas/v1/`; implementation consumes and validates those bytes rather than recreating them.
 
@@ -71,26 +71,37 @@ For Android work, use the installed official skills at `C:\Users\ldoby\.codex\sk
 - Official Android skills installed for Codex.
 - Isolated implementation worktree and branch created from planning commit `28e1bb59d`.
 
-No implementation production files or dependencies have been changed yet.
+Task 1 now has 13 shared literal validation fixtures, validators/types in both runtimes, a direct pinned Python `remote-control` extra, and a build-time schema copy/byte-identity gate. Pairing public JWKs reject private key material. Final diff review and the atomic commit remain.
 
 ## Current work and next exact steps
 
-1. Verify/install repository-local Node dependencies with `npm ci`; do not use global package mutation.
-2. Establish a focused baseline using existing TypeScript workspace checks relevant to a new framework-neutral package.
-3. Add Task 1 workspace/test configuration and literal valid/invalid fixtures.
-4. Run the TypeScript and Python tests and record the intended red assertion failures here.
-5. Add the minimal validators/types and explicit Python dependency.
-6. Run focused tests/checks, cross-runtime parity, lockfile review, and `git diff --check`.
-7. Update this file with green evidence and exact commit, then make the atomic Task 1 commit.
+1. Stage only the Task 1 files listed by `git status`, excluding ignored build/dependency/cache output.
+2. Inspect `git diff --cached --check`, the staged file list, and the complete staged patch.
+3. Commit `feat(remote-protocol): define validated v1 contract`.
+4. Refresh this file after the commit with the commit hash and make a documentation-only handoff commit.
+5. Begin Task 2 only after Task 1 is clean and independently restartable.
 
 ## Latest verification evidence
 
 | Time | Command | Result |
 |---|---|---|
-| 2026-07-26 04:19 EDT | `git status --short --branch` | Clean branch `feat/remote-control-protocol-v1` |
-| 2026-07-26 04:19 EDT | `git rev-parse HEAD` before handoff creation | `28e1bb59dfee7c54340fbc0798e1dba69516b708` |
+| 2026-07-26 04:27 EDT | `npm test --workspace apps/remote-control-protocol -- --run src/validate.test.ts` | Intended RED: 1 file, 12 failed assertions because the TypeScript validator does not exist |
+| 2026-07-26 04:27 EDT | `uv run --frozen --extra dev pytest -q tests/remote_control/test_protocol_schema.py` | Intended RED: 12 failed assertions because the Python validator does not exist |
+| 2026-07-26 04:32 EDT | `npm test --workspace apps/remote-control-protocol -- --run src/validate.test.ts` | GREEN: 1 file, 12 passed |
+| 2026-07-26 04:32 EDT | `uv run --frozen --extra dev pytest -q tests/remote_control/test_protocol_schema.py` | Provisional GREEN: 12 passed; repository wrapper still required |
+| 2026-07-26 04:36 EDT | `npm run check --workspace apps/remote-control-protocol` | GREEN: typecheck, lint, 12 tests, six-schema byte-identical build copy |
+| 2026-07-26 04:37 EDT | `scripts/run_tests.sh ... test_protocol_schema.py tests/test_project_metadata.py -q` via Git Bash and Windows venv | GREEN exit 0: 21 passed; progress callback emitted a non-fatal cp1252 Unicode traceback |
+| 2026-07-26 04:40 EDT | TypeScript and Python focused tests with private JWK fixture | Intended RED: 1 of 13 failed because private `d` was accepted |
+| 2026-07-26 04:41 EDT | Same focused tests after canonical pairing schema hardening | GREEN: 13 passed in each runtime |
+| 2026-07-26 04:41 EDT | `uvx pip-audit --local --skip-editable --progress-spinner off` | No known Python vulnerabilities |
+| 2026-07-26 04:41 EDT | `npm audit --workspace apps/remote-control-protocol --omit=dev` | New Ajv-path `fast-uri` findings remediated by root override `3.1.4`; remaining PostCSS finding traces to existing non-protocol workspaces |
+| 2026-07-26 04:43 EDT | `npm run check --workspace apps/remote-control-protocol` | GREEN: typecheck, lint, 13 tests, six-schema byte-identical build copy |
+| 2026-07-26 04:43 EDT | `npm test --workspace tests-js -- --run` | GREEN: 3 files, 9 tests |
+| 2026-07-26 04:43 EDT | `uv run --frozen --extra dev --extra remote-control ...` | GREEN: Ruff, ty, and 13 focused tests |
+| 2026-07-26 04:43 EDT | Hermetic wrapper for protocol plus project metadata tests | GREEN exit 0: 22 passed; same non-fatal Windows cp1252 progress traceback |
+| 2026-07-26 04:43 EDT | `git diff --check` | GREEN; only expected Windows LF-to-CRLF checkout warnings |
 
-No Task 1 red or green test has run yet.
+Tooling note: Hermes intentionally blocks ordinary wheel/sdist builds. A wheel smoke attempt failed at the repository's explicit distribution guard before packaging, so supported editable/source-install verification is authoritative for this slice.
 
 ## Open product/security decisions
 

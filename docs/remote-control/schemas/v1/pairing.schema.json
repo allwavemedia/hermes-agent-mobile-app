@@ -8,6 +8,26 @@
     {"$ref": "#/$defs/confirmation"}
   ],
   "$defs": {
+    "publicEcJwk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kty", "crv", "x", "y"],
+      "properties": {
+        "kty": {"const": "EC"},
+        "crv": {"const": "P-256"},
+        "x": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+        "y": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+        "alg": {"const": "ES256"},
+        "kid": {"type": "string", "minLength": 1, "maxLength": 128},
+        "key_ops": {
+          "type": "array",
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": {"const": "verify"}
+        },
+        "use": {"const": "sig"}
+      }
+    },
     "base": {
       "type": "object",
       "required": ["pairingId", "issuedAt", "expiresAt"],
@@ -32,7 +52,7 @@
             "capability": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
             "computerId": {"type": "string", "minLength": 8, "maxLength": 128},
             "computerName": {"type": "string", "minLength": 1, "maxLength": 128},
-            "hostPublicJwk": {"type": "object"},
+            "hostPublicJwk": {"$ref": "#/$defs/publicEcJwk"},
             "relayOrigin": {"type": "string", "format": "uri", "maxLength": 2048},
             "directSpkiPin": {"type": "string", "pattern": "^sha256-[A-Za-z0-9_-]{43}$"},
             "hostSignature": {"type": "string", "minLength": 32, "maxLength": 8192}
@@ -52,7 +72,7 @@
             "issuedAt": {"type": "string", "format": "date-time"},
             "expiresAt": {"type": "string", "format": "date-time"},
             "messageType": {"const": "pair.claim"},
-            "devicePublicJwk": {"type": "object"},
+            "devicePublicJwk": {"$ref": "#/$defs/publicEcJwk"},
             "deviceNonce": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
             "deviceSignature": {"type": "string", "minLength": 32, "maxLength": 8192}
           }

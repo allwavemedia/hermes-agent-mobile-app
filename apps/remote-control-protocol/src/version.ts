@@ -1,0 +1,4 @@
+export const REMOTE_CONTROL_PROTOCOL_MAJOR = 1 as const
+export const REMOTE_CONTROL_PROTOCOL_MINOR = 0 as const
+export const REMOTE_CONTROL_PROTOCOL =
+  `hermes.remote-control/${REMOTE_CONTROL_PROTOCOL_MAJOR}.${REMOTE_CONTROL_PROTOCOL_MINOR}` as const

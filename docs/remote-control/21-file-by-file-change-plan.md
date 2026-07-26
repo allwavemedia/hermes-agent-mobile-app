@@ -33,6 +33,7 @@ This is the proposed production change inventory. Any implementation PR that nee
 | `apps/remote-control-protocol/src/compatibility.ts` | Minor negotiation/unknown-critical rules |
 | `apps/remote-control-protocol/src/*.test.ts` | Fixture, property, reducer, compatibility, canonicalization tests |
 | `apps/remote-control-protocol/fixtures/v1/*.json` | Shared valid/invalid contract corpus copied/generated from canonical docs schemas |
+| `apps/remote-control-protocol/scripts/copy-schemas.mjs` | Build-only Node script that copies the canonical schemas into `dist/schemas/v1/` and fails unless every emitted file is byte-identical |
 
 Canonical schemas remain under `docs/remote-control/schemas/v1/`; the package build copies them and verifies byte identity rather than maintaining a second source.
 
