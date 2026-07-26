@@ -25,7 +25,7 @@ Feature stores are computer/session keyed and contain projections, not secrets. 
 
 ## Focused Kotlin modules
 
-1. **`NativeHermesIdentity`** — generate/list/delete non-exportable P-256 aliases, public JWK/thumbprint, sign low/medium risk, sign high risk through BiometricPrompt `CryptoObject`, report secure hardware characteristics.
+1. **`NativeHermesIdentity`** — generate/list/delete non-exportable P-256 aliases, public JWK/thumbprint, SHA-256/base64url digest, strict ES256 compact-JWS verification for host proofs, sign low/medium risk, sign high risk through BiometricPrompt `CryptoObject`, report secure hardware characteristics. This module implements the protocol package's narrow crypto adapter; do not assume React Native provides WebCrypto or add a Node-crypto polyfill.
 2. **`NativeHermesSecureTransport`** — direct WSS with SPKI pin, strict TLS, no cleartext/user CA; relay networking may use RN/fetch/WebSocket only if equivalent lifecycle/pinning needs are met.
 3. **`NativeHermesPairing`** — strict QR/manual/deep-link parsing, Google Code Scanner launch, verified App Link handoff. Manual entry is mandatory fallback for devices without Google Play services.
 4. **`NativeHermesLifecycleSecurity`** — app lock state, foreground/background signals, secure-window toggle, screen-obscured touch policy, app-switcher snapshot protection.

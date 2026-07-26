@@ -1,0 +1,67 @@
+{
+  "signedEnvelope": {
+    "document": {
+      "protocol": "hermes.remote-control/1.0",
+      "envelopeId": "env_vector_0001",
+      "kind": "command",
+      "type": "prompt.submit",
+      "critical": true,
+      "computerId": "cmp_vector_0001",
+      "deviceId": "dev_vector_0001",
+      "sessionId": "ses_vector_0001",
+      "issuedAt": "2026-07-26T08:00:00Z",
+      "expiresAt": "2026-07-26T08:05:00Z",
+      "jti": "jti_vector_0001",
+      "idempotencyKey": "idem_vector_001",
+      "expectedSessionRevision": 7,
+      "capabilityHash": "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "payload": {
+        "queueIfOffline": false,
+        "text": "Continue safely."
+      }
+    },
+    "canonical": "{\"capabilityHash\":\"sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"computerId\":\"cmp_vector_0001\",\"critical\":true,\"deviceId\":\"dev_vector_0001\",\"envelopeId\":\"env_vector_0001\",\"expectedSessionRevision\":7,\"expiresAt\":\"2026-07-26T08:05:00Z\",\"idempotencyKey\":\"idem_vector_001\",\"issuedAt\":\"2026-07-26T08:00:00Z\",\"jti\":\"jti_vector_0001\",\"kind\":\"command\",\"payload\":{\"queueIfOffline\":false,\"text\":\"Continue safely.\"},\"protocol\":\"hermes.remote-control/1.0\",\"sessionId\":\"ses_vector_0001\",\"type\":\"prompt.submit\"}",
+    "signature": "eyJhbGciOiJFUzI1NiIsInR5cCI6Imhlcm1lcy1yZW1vdGUtY29udHJvbCtqd3MifQ.eyJjYXBhYmlsaXR5SGFzaCI6InNoYTI1Ni1BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBIiwiY29tcHV0ZXJJZCI6ImNtcF92ZWN0b3JfMDAwMSIsImNyaXRpY2FsIjp0cnVlLCJkZXZpY2VJZCI6ImRldl92ZWN0b3JfMDAwMSIsImVudmVsb3BlSWQiOiJlbnZfdmVjdG9yXzAwMDEiLCJleHBlY3RlZFNlc3Npb25SZXZpc2lvbiI6NywiZXhwaXJlc0F0IjoiMjAyNi0wNy0yNlQwODowNTowMFoiLCJpZGVtcG90ZW5jeUtleSI6ImlkZW1fdmVjdG9yXzAwMSIsImlzc3VlZEF0IjoiMjAyNi0wNy0yNlQwODowMDowMFoiLCJqdGkiOiJqdGlfdmVjdG9yXzAwMDEiLCJraW5kIjoiY29tbWFuZCIsInBheWxvYWQiOnsicXVldWVJZk9mZmxpbmUiOmZhbHNlLCJ0ZXh0IjoiQ29udGludWUgc2FmZWx5LiJ9LCJwcm90b2NvbCI6Imhlcm1lcy5yZW1vdGUtY29udHJvbC8xLjAiLCJzZXNzaW9uSWQiOiJzZXNfdmVjdG9yXzAwMDEiLCJ0eXBlIjoicHJvbXB0LnN1Ym1pdCJ9.wqDc2T8MXSasvnSq_1cTQbZZenBrs3QFPWoecZC2dK89m16g-3HCQBRla9uZiVtiQ_83sTQ6U9s8v9QT92n4Hg",
+    "publicJwk": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "f83OJ3D2xF1Bg8vub9tLe1gHMzV76e8Tus9uPHvRVEU",
+      "y": "x_FEzRu9m36HLN_tue659LNpXW6pCyStikYjKIWI5a0"
+    }
+  },
+  "capability": {
+    "document": {
+      "capabilityVersion": 1,
+      "computerId": "cmp_vector_0001",
+      "sessionId": "ses_vector_0001",
+      "sessionRevision": 7,
+      "issuedAt": "2026-07-26T08:00:00Z",
+      "expiresAt": "2026-07-26T08:05:00Z",
+      "methods": {
+        "approval.respond": {
+          "risk": "high",
+          "offline": false,
+          "biometric": true
+        },
+        "interrupt.request": {
+          "risk": "medium",
+          "offline": false,
+          "biometric": false
+        },
+        "prompt.submit": {
+          "risk": "low",
+          "offline": true,
+          "biometric": false
+        }
+      },
+      "constraints": {
+        "attachmentMaxBytes": 1048576,
+        "terminalRead": true,
+        "terminalWrite": false,
+        "reasoningVisible": false
+      }
+    },
+    "canonical": "{\"capabilityVersion\":1,\"computerId\":\"cmp_vector_0001\",\"constraints\":{\"attachmentMaxBytes\":1048576,\"reasoningVisible\":false,\"terminalRead\":true,\"terminalWrite\":false},\"expiresAt\":\"2026-07-26T08:05:00Z\",\"issuedAt\":\"2026-07-26T08:00:00Z\",\"methods\":{\"approval.respond\":{\"biometric\":true,\"offline\":false,\"risk\":\"high\"},\"interrupt.request\":{\"biometric\":false,\"offline\":false,\"risk\":\"medium\"},\"prompt.submit\":{\"biometric\":false,\"offline\":true,\"risk\":\"low\"}},\"sessionId\":\"ses_vector_0001\",\"sessionRevision\":7}",
+    "hash": "sha256-UJDtYieMbjQP6PJC7HkD2_LNJRcK-g-iFZ6UTuVp3-g"
+  }
+}

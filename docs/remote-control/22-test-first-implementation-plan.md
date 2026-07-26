@@ -30,7 +30,7 @@ Files: `apps/remote-control-protocol/src/{reducer,compatibility}.ts`, `src/{redu
 Files: `apps/remote-control-protocol/src/{canonicalize,risk}.ts`, `src/{canonicalize,risk}.test.ts`, `remote_control/{protocol,authorization}.py`, `tests/remote_control/test_protocol_signatures.py`.
 
 1. Add shared signature vectors plus unknown-critical, cross-target, expired, wrong-algorithm, stale-capability, and offline-policy tests. Run TS and Python tests; expected red: signature vectors/policy unsupported.
-2. Implement JCS digest helpers, ES256 verification, capability hash and queue/step-up taxonomy using `jose` and existing Python crypto/JWT libraries.
+2. Implement portable JCS bytes plus an asynchronous crypto-provider boundary, capability hash, and queue/step-up taxonomy. Verify the Node test adapter with `jose`, use existing Python crypto/JWT libraries on the host, and implement the same provider later through the focused Kotlin native module; do not import `node:crypto` into the shared package or assume React Native WebCrypto.
 3. Expected green: both runtimes verify the same vectors and reject every mutation.
 4. Commit `feat(remote-protocol): bind signed capabilities and risk`.
 

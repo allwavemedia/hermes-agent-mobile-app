@@ -1,10 +1,10 @@
 # Hermes Android Remote Control — Development Handoff
 
-Last refreshed: 2026-07-26 04:58 EDT
+Last refreshed: 2026-07-26 05:26 EDT
 
 Refresh owner: the active implementation agent
 
-Status: implementation authorized; Milestone 1 / Task 2 complete, Task 3 next
+Status: implementation authorized; Milestone 1 / Task 3 complete and commit-ready
 
 This is the canonical restart document for the implementation phase. It is intentionally operational and must describe the repository as it exists, not as the plan expects it to exist.
 
@@ -80,13 +80,15 @@ Task 1 delivered 13 shared literal validation fixtures, validators/types in both
 
 Task 2 delivered immutable ordered replay results, duplicate/gap/conflict/epoch-reset handling, a 4,096-entry identity cap, and fail-closed highest-common-minor negotiation. Seven properties run 1,000 generated cases each.
 
+Task 3 dependency decision: use `canonicalize@3.0.0` (npm, RFC 8785 Appendix G implementation) and Trail of Bits `rfc8785==0.1.4` (Python, no transitive dependencies) instead of writing security-sensitive JCS serialization. The shared TypeScript package must not import Node crypto or assume React Native WebCrypto: it defines an asynchronous crypto-provider boundary. `jose@6.2.4` is dev-only here for shared-vector tests and will be runtime-owned by the relay adapter; Android implements the provider with the focused Kotlin native module. Python uses existing pinned `cryptography`/PyJWT libraries.
+
+Task 3 delivered shared RFC 8785/ES256 vectors, canonical hashes, strict protected algorithm/type and public-key checks, exact computer/device/session target binding, expiry/future-clock rejection, capability-stale rejection, low-risk-only offline prompt queueing, foreground/unlock/biometric step-up policy, and fail-closed unknown-message handling in both runtimes. Runtime crypto adapter failures cannot authorize.
+
 ## Current work and next exact steps
 
-1. Read Task 3 plus `06-pairing-identity-key-lifecycle.md`, the signature/replay sections of `07-threat-model.md`, and current Python JWT/crypto helpers.
-2. Define shared deterministic signature vectors and risk-policy cases before adding production code.
-3. Add `jose` only if the reviewed TypeScript implementation requires it; reuse the pinned Python cryptography/PyJWT stack.
-4. Run the Task 3 tests for the intended RED, then implement JCS bytes/digests, strict ES256 verification, capability hash, unknown-critical handling, and queue/step-up taxonomy.
-5. Refresh this handoff at each red/green boundary and commit the independently verified Task 3 slice.
+1. Create and push the atomic Task 3 commit `feat(remote-protocol): bind signed capabilities and risk`.
+2. Record the resulting commit and PR checkpoint here.
+3. Begin Task 4 by reading current `tui_gateway/transport.py`, `tui_gateway/server.py`, their focused tests/instructions, and then write the listener-hub tests for the intended RED.
 
 ## Latest verification evidence
 
@@ -119,6 +121,20 @@ Task 2 delivered immutable ordered replay results, duplicate/gap/conflict/epoch-
 | 2026-07-26 04:56 EDT | Final protocol check after predecessor-link coverage review | GREEN: 3 files, 22 tests; gap property covers both missing sequence and wrong `prevSeq` |
 | 2026-07-26 04:56 EDT | Task 2 atomic commit | `b651ed53f9320807419a54b82f8d7fee25ffb5b6` |
 | 2026-07-26 04:58 EDT | Publish checkpoint | Branch tracks `origin/feat/remote-control-protocol-v1`; stacked draft PR #2 is open |
+| 2026-07-26 05:07 EDT | `npm test --workspace apps/remote-control-protocol -- --run src/canonicalize.test.ts src/risk.test.ts` | Intended RED: 2 files, 7 failed assertions because canonicalization/signature and risk modules do not exist |
+| 2026-07-26 05:07 EDT | `uv run --frozen --extra dev --extra remote-control pytest tests/remote_control/test_protocol_signatures.py -q` | Intended RED: 4 failed assertions because Python canonicalization/signature and authorization APIs do not exist |
+| 2026-07-26 05:09 EDT | Focused Task 3 TypeScript and Python commands after minimal implementation | GREEN: 2 files / 7 TypeScript tests; 4 Python tests |
+| 2026-07-26 05:10 EDT | Focused fail-closed refactor tests | Intended RED: invalid TypeScript clock, malformed TypeScript risk, and unverified cross-runtime biometric proof were accepted/unsupported |
+| 2026-07-26 05:11 EDT | Focused Task 3 commands after security refactor | GREEN: 2 files / 7 TypeScript tests; 4 Python tests |
+| 2026-07-26 05:12 EDT | First broad protocol check | Typecheck initially found three integration issues; after correction, package check GREEN: 5 files / 29 tests and schema gate |
+| 2026-07-26 05:14 EDT | Python Ruff/ty/focused pytest | GREEN after one type-only RFC 8785 value narrowing correction: Ruff and ty clean; 26 tests passed |
+| 2026-07-26 05:18 EDT | Android portability review | Rejected pre-commit `node:crypto` import: RN 0.86 does not document WebCrypto and `jose` requires WebCrypto outside Node. Added narrow async runtime crypto provider instead. |
+| 2026-07-26 05:19 EDT | Focused TypeScript tests/typecheck after provider refactor | GREEN: 2 files / 7 tests; TypeScript clean |
+| 2026-07-26 05:22 EDT | Runtime-provider fail-closed tests | Intended RED: malformed digest output authorized and malformed verified payload returned the weaker payload-mismatch result |
+| 2026-07-26 05:22 EDT | Focused provider tests/typecheck/lint after hardening | GREEN: 2 files / 7 tests; TypeScript and lint clean |
+| 2026-07-26 05:23 EDT | Canonical repository runner via Git Bash/Windows venv | GREEN exit 0: 3 files / 26 tests; same non-fatal cp1252 progress callback traceback |
+| 2026-07-26 05:24 EDT | Exact target-context tests | Intended RED then GREEN: both runtimes now reject a signed device/session target when caller omits either binding |
+| 2026-07-26 05:25 EDT | Final Task 3 commit gate | GREEN: protocol 5 files / 29 tests plus type/lint/schema gate; root JavaScript 9 tests; Python Ruff/ty clean and 26 focused tests; `git diff --check` clean except expected line-ending notices |
 
 Tooling note: Hermes intentionally blocks ordinary wheel/sdist builds. A wheel smoke attempt failed at the repository's explicit distribution guard before packaging, so supported editable/source-install verification is authoritative for this slice.
 

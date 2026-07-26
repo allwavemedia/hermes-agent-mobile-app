@@ -8,7 +8,7 @@ This is the proposed production change inventory. Any implementation PR that nee
 |---|---|
 | `package.json` | Add only cross-workspace validation/release scripts if required; existing `apps/*` glob already covers new packages |
 | `package-lock.json` | Lock all Android/protocol/relay workspaces and exact transitive dependencies |
-| `pyproject.toml` | Add `keyring>=25.7,<26`; add remote-control test markers only if needed |
+| `pyproject.toml` | Add opt-in remote-control dependencies (`rfc8785==0.1.4`, later `keyring>=25.7,<26`); add test markers only if needed |
 | `uv.lock` | Lock host dependency graph |
 | `.github/workflows/ci.yml` | Wire existing reusable jobs to new remote-control checks if current orchestrator requires it |
 | `.github/workflows/android-remote.yml` | Android unit/lint/debug build/emulator contract gates; no release secrets on PR |
@@ -21,13 +21,13 @@ This is the proposed production change inventory. Any implementation PR that nee
 
 | File | Planned content |
 |---|---|
-| `apps/remote-control-protocol/package.json` | Private workspace, exports, check/test/build scripts; `ajv`, `jose` only where runtime-used |
+| `apps/remote-control-protocol/package.json` | Private workspace, exports, check/test/build scripts; runtime declarations for `ajv` and RFC 8785 Appendix G `canonicalize`; `jose` is test-only here and becomes a relay runtime dependency when the Node crypto adapter lands |
 | `apps/remote-control-protocol/tsconfig.json` | Strict TS, no DOM dependency |
 | `apps/remote-control-protocol/src/index.ts` | Deliberate public exports |
 | `apps/remote-control-protocol/src/version.ts` | v1 major/minor negotiation |
 | `apps/remote-control-protocol/src/types.ts` | Envelope/snapshot/event/capability/command/receipt types |
 | `apps/remote-control-protocol/src/validate.ts` | Ajv validators and stable schema errors |
-| `apps/remote-control-protocol/src/canonicalize.ts` | RFC 8785-compatible canonical bytes/digests |
+| `apps/remote-control-protocol/src/canonicalize.ts` | RFC 8785-compatible canonical bytes plus a narrow async hash/strict-ES256 runtime adapter contract; no Node or assumed WebCrypto import |
 | `apps/remote-control-protocol/src/risk.ts` | Risk classes and queue/step-up policy constants |
 | `apps/remote-control-protocol/src/reducer.ts` | Epoch/sequence/idempotent projection reducer |
 | `apps/remote-control-protocol/src/compatibility.ts` | Minor negotiation/unknown-critical rules |
