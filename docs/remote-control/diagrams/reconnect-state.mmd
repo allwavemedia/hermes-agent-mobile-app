@@ -1,0 +1,14 @@
+stateDiagram-v2
+    [*] --> Disconnected
+    Disconnected --> Connecting
+    Connecting --> Authenticating
+    Authenticating --> Synchronizing
+    Synchronizing --> Live
+    Live --> Disconnected: network loss
+    Synchronizing --> Replaying: cursor available
+    Replaying --> Live
+    Synchronizing --> Snapshot: gap or epoch change
+    Snapshot --> Live
+    Connecting --> Backoff: transient failure
+    Backoff --> Connecting
+    Authenticating --> Terminal: revoked or unsupported

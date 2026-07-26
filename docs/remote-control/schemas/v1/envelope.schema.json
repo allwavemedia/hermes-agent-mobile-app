@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hermes-agent.invalid/schemas/remote-control/v1/envelope.schema.json",
+  "title": "Hermes Remote Control v1 Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "envelopeId",
+    "kind",
+    "type",
+    "computerId",
+    "issuedAt",
+    "expiresAt",
+    "jti",
+    "payload",
+    "signature"
+  ],
+  "properties": {
+    "protocol": {"const": "hermes.remote-control/1.0"},
+    "envelopeId": {"$ref": "#/$defs/opaqueId"},
+    "kind": {
+      "enum": ["control", "pairing", "presence", "subscription", "state", "command", "receipt", "device"]
+    },
+    "type": {"type": "string", "minLength": 1, "maxLength": 80, "pattern": "^[a-z][a-zA-Z0-9]*(\\.[a-zA-Z0-9]+)+$"},
+    "critical": {"type": "boolean", "default": true},
+    "computerId": {"$ref": "#/$defs/opaqueId"},
+    "deviceId": {"$ref": "#/$defs/opaqueId"},
+    "sessionId": {"$ref": "#/$defs/opaqueId"},
+    "epoch": {"$ref": "#/$defs/opaqueId"},
+    "issuedAt": {"$ref": "#/$defs/timestamp"},
+    "expiresAt": {"$ref": "#/$defs/timestamp"},
+    "jti": {"$ref": "#/$defs/opaqueId"},
+    "idempotencyKey": {"$ref": "#/$defs/opaqueId"},
+    "expectedSessionRevision": {"type": "integer", "minimum": 0},
+    "capabilityHash": {"$ref": "#/$defs/sha256"},
+    "payload": {"type": "object"},
+    "signature": {"type": "string", "minLength": 32, "maxLength": 8192, "pattern": "^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$"}
+  },
+  "$defs": {
+    "opaqueId": {"type": "string", "minLength": 8, "maxLength": 128, "pattern": "^[A-Za-z0-9_-]+$"},
+    "timestamp": {"type": "string", "format": "date-time", "maxLength": 40},
+    "sha256": {"type": "string", "pattern": "^sha256-[A-Za-z0-9_-]{43}$"}
+  }
+}

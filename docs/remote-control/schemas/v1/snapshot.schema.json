@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hermes-agent.invalid/schemas/remote-control/v1/snapshot.schema.json",
+  "title": "Hermes Remote Control v1 Session Snapshot Payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "epoch",
+    "snapshotSeq",
+    "sessionRevision",
+    "generatedAt",
+    "session",
+    "transcript",
+    "activities",
+    "pendingRequests",
+    "terminals",
+    "attachments",
+    "capabilityHash"
+  ],
+  "properties": {
+    "epoch": {"type": "string", "minLength": 8, "maxLength": 128},
+    "snapshotSeq": {"type": "integer", "minimum": 0},
+    "sessionRevision": {"type": "integer", "minimum": 0},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "status"],
+      "properties": {
+        "id": {"type": "string", "minLength": 8, "maxLength": 128},
+        "title": {"type": "string", "maxLength": 256},
+        "project": {"type": "string", "maxLength": 256},
+        "cwdLabel": {"type": "string", "maxLength": 256},
+        "model": {"type": "string", "maxLength": 128},
+        "status": {"enum": ["idle", "running", "waiting", "interrupted", "completed", "failed"]},
+        "activeRunId": {"type": ["string", "null"], "maxLength": 128}
+      }
+    },
+    "transcript": {"type": "array", "maxItems": 10000, "items": {"$ref": "#/$defs/item"}},
+    "activities": {"type": "array", "maxItems": 1000, "items": {"$ref": "#/$defs/item"}},
+    "pendingRequests": {"type": "array", "maxItems": 100, "items": {"$ref": "#/$defs/item"}},
+    "terminals": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/item"}},
+    "attachments": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/item"}},
+    "capabilityHash": {"type": "string", "pattern": "^sha256-[A-Za-z0-9_-]{43}$"}
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "type": {"type": "string", "minLength": 1, "maxLength": 80}
+      },
+      "additionalProperties": true
+    }
+  }
+}

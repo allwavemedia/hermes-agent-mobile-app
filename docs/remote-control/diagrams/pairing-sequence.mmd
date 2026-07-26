@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant H as Host
+    participant R as Relay
+    participant A as Android
+    H->>R: Pair offer hash + signed host metadata
+    H-->>A: QR or manual code (2 minute expiry)
+    A->>R: Capability + device key + signed nonce
+    R->>H: Pending claim
+    H->>A: Signed transcript + host nonce
+    A->>H: Signed transcript + phrase confirmation
+    H->>R: Atomically consume offer
+    R-->>A: Host-signed acceptance

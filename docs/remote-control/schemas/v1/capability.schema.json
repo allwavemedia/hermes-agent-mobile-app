@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hermes-agent.invalid/schemas/remote-control/v1/capability.schema.json",
+  "title": "Hermes Remote Control v1 Capability Snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "capabilityVersion",
+    "computerId",
+    "sessionId",
+    "sessionRevision",
+    "issuedAt",
+    "expiresAt",
+    "methods",
+    "constraints",
+    "signature"
+  ],
+  "properties": {
+    "capabilityVersion": {"const": 1},
+    "computerId": {"type": "string", "minLength": 8, "maxLength": 128},
+    "sessionId": {"type": "string", "minLength": 8, "maxLength": 128},
+    "sessionRevision": {"type": "integer", "minimum": 0},
+    "issuedAt": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "methods": {
+      "type": "object",
+      "maxProperties": 128,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["risk", "offline", "biometric"],
+        "properties": {
+          "risk": {"enum": ["low", "medium", "high"]},
+          "offline": {"type": "boolean"},
+          "biometric": {"type": "boolean"},
+          "maxBytes": {"type": "integer", "minimum": 0, "maximum": 52428800}
+        }
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "attachmentMaxBytes": {"type": "integer", "minimum": 0, "maximum": 52428800},
+        "terminalRead": {"type": "boolean"},
+        "terminalWrite": {"type": "boolean"},
+        "reasoningVisible": {"type": "boolean"}
+      }
+    },
+    "signature": {"type": "string", "minLength": 32, "maxLength": 8192}
+  }
+}
