@@ -1,10 +1,10 @@
 # Hermes Android Remote Control — Development Handoff
 
-Last refreshed: 2026-07-26 05:48 EDT
+Last refreshed: 2026-07-26 05:54 EDT
 
 Refresh owner: the active implementation agent
 
-Status: implementation authorized; Milestone 2 / Task 4 complete, Task 5 next
+Status: development intentionally paused; Milestone 2 / Task 4 complete and published, Task 5 preflight complete but no Task 5 code or tests written
 
 This is the canonical restart document for the implementation phase. It is intentionally operational and must describe the repository as it exists, not as the plan expects it to exist.
 
@@ -43,15 +43,24 @@ The implementation branch is intentionally stacked on the documentation branch u
 
 The user explicitly authorized development after the planning stop gate. Begin with reversible foundation slices. Do not create cloud resources, public endpoints, signing keys, or a public release without separate explicit approval. Do not claim E2EE; the proposed MVP relay is content-trusted.
 
-Current slice: [Milestone 1, Task 3](22-test-first-implementation-plan.md#task-3--canonical-signatures-capabilities-and-risk-policy), canonical signatures, capabilities, and risk policy.
+Current slice: [Milestone 2, Task 5](22-test-first-implementation-plan.md#task-5--stable-snapshotevent-adapter), stable snapshot/event adapter.
 
-Task 1 execution corrections accepted during critical review:
+Durable implementation constraints accepted during critical review:
 
 - Add `jsonschema==4.26.0` as a direct dependency of a dedicated `remote-control` extra because production Python code imports it; do not rely on its incidental presence in the development-only MCP stack or enlarge the default core install.
 - Make initial red tests fail by assertion on missing/unsupported behavior, not by test-runner configuration or uncaught import errors.
 - Canonical schemas already exist under `docs/remote-control/schemas/v1/`; implementation consumes and validates those bytes rather than recreating them.
 
 These corrections do not change protocol semantics.
+
+Task 5 security boundary accepted during parallel preflight:
+
+- Build fresh allowlisted remote projections; schema validation is defense in depth, not a redaction boundary.
+- Never expose raw JSON-RPC, raw gateway/session dictionaries, raw exceptions, secrets, absolute paths, provider details, tool arguments/results/diffs, terminal content, or attachment bytes/paths.
+- Never replace or rebind `session["transport"]`; consume only Task 4 listener copies after the local write.
+- Unknown noncritical internal events are dropped without a v1 event or sequence increment. Unknown critical or sensitive-unmappable events fail closed without a sequence increment.
+- Task 5 may route only `prompt.submit`, `session.steer`, and `session.interrupt`, using a constant allowlist and freshly constructed parameters. It must expose no caller-selected method or generic dispatch surface.
+- `approval.respond`, `clarify.respond`, unconstrained `session.create`, and terminal controls remain denied/unadvertised until their dedicated binding, spawn-policy, and terminal-policy tasks. Do not alias `interrupt.request`.
 
 ## Required reading on restart
 
@@ -61,7 +70,8 @@ Read completely, in order:
 2. this file;
 3. `docs/remote-control/README.md`;
 4. `docs/remote-control/22-test-first-implementation-plan.md`;
-5. the relevant Android/engineering `SKILL.md` files for the next task.
+5. the Task 5 parallel-analysis artifacts listed below, when the existing worktree is available;
+6. the relevant Android/engineering `SKILL.md` files for the next task.
 
 For Android work, use the installed official skills at `C:\Users\ldoby\.codex\skills\`, especially `android-cli`, `testing-setup`, and `android-intent-security` when their trigger conditions apply. The CLI executable is `C:\ProgramData\AndroidCLI\android.exe` if the current process has a stale `PATH`.
 
@@ -77,6 +87,7 @@ For Android work, use the installed official skills at `C:\Users\ldoby\.codex\sk
 - `b651ed53f9320807419a54b82f8d7fee25ffb5b6` — `feat(remote-protocol): add deterministic replay reducer`
 - `daca7c231` — `feat(remote-protocol): bind signed capabilities and risk`
 - `b82922970` — `feat(tui-gateway): add isolated session event listeners`
+- `2fbd04c8d` — `docs(remote-control): record gateway task 4 publish`
 
 Task 1 delivered 13 shared literal validation fixtures, validators/types in both runtimes, a direct pinned Python `remote-control` extra, and a build-time schema copy/byte-identity gate. Pairing public JWKs reject private key material.
 
@@ -88,11 +99,40 @@ Task 3 delivered shared RFC 8785/ES256 vectors, canonical hashes, strict protect
 
 Task 4 delivered a bounded asynchronous listener queue per `(sessionId, subscriberId)`, independent deep-copied deliveries, exception isolation, one reset-required signal on overflow, and server publication only after the unchanged local transport write. A listener never replaces `session["transport"]` or runs inline on the agent path.
 
+Task 5 preflight used three parallel read-only subagents, followed by a planned single implementation owner. The source, security, and test-design reports are intentionally ignored working artifacts:
+
+- `.superpowers/sdd/22-test-first-implementation-plan/task-5-gateway-analysis.md`
+- `.superpowers/sdd/22-test-first-implementation-plan/task-5-security-analysis.md`
+- `.superpowers/sdd/22-test-first-implementation-plan/task-5-test-analysis.md`
+- `.superpowers/sdd/22-test-first-implementation-plan/task-5-brief.md`
+- `.superpowers/sdd/22-test-first-implementation-plan/progress.md`
+
+The implementation owner was interrupted during design, before creating files or running the intended RED test. At the pause point, `HEAD` and `origin/feat/remote-control-protocol-v1` both resolve to `2fbd04c8d34eb25c226d74beac7ba9a1e157d571`, and the tracked worktree is clean.
+
 ## Current work and next exact steps
 
-1. Push the Task 4 commit and this handoff checkpoint to draft PR #2.
-2. Begin Task 5 by reading current snapshot/session/event representations and existing gateway event tests.
-3. Write snapshot redaction, known-event normalization, unknown-critical rejection, and generic-RPC denial fixtures/tests before production adapter code.
+Development is paused by user request. Do not resume implementation until the user asks.
+
+When resumed:
+
+1. Confirm the branch/worktree/PR state and read the Task 5 brief, three analysis reports, and the binding security boundary above.
+2. Use the parallel/subagent workflow: parallelize only independent read-only analysis or review; assign Task 5 tracked edits and its atomic commit to one implementation owner.
+3. Create `tests/tui_gateway/test_remote_adapter.py` and `tests/tui_gateway/test_remote_event_normalization.py` first. The first failure must be a behavioral assertion for missing adapter behavior, not an import/collection/configuration failure.
+4. Run the intended RED command:
+
+   ```powershell
+   uv run pytest -q tests/tui_gateway/test_remote_adapter.py tests/tui_gateway/test_remote_event_normalization.py
+   ```
+
+5. Implement only the safe Task 5 subset in `remote_control/adapter.py`, `remote_control/models.py`, the minimal `remote_control/__init__.py` export if required, and a narrow adapter-safe seam in `tui_gateway/server.py` only if required to prevent transport takeover.
+6. Re-run the focused command to GREEN, then the broader regressions:
+
+   ```powershell
+   uv run pytest -q tests/tui_gateway/test_protocol.py tests/tui_gateway/test_remote_event_hub.py tests/gateway/test_tui_approval_redaction.py tests/remote_control/test_protocol_schema.py
+   ```
+
+7. Run Ruff, ty, and `git diff --check`; self-review redaction, generic-dispatch denial, transport identity, and sequence behavior; create the atomic commit `feat(remote-host): add stable gateway session adapter`.
+8. Generate an SDD review package from base `2fbd04c8d`, assign an independent spec/quality reviewer, resolve all blocking findings through the same implementation owner, then refresh this file and push draft PR #2.
 
 ## Latest verification evidence
 
@@ -151,12 +191,14 @@ Task 4 delivered a bounded asynchronous listener queue per `(sessionId, subscrib
 | 2026-07-26 05:44 EDT | Final Task 4 canonical focused gate | GREEN exit 0: 1 file / 5 tests; `git diff --check` clean except expected line-ending notices |
 | 2026-07-26 05:45 EDT | Task 4 atomic commit | `b82922970` — `feat(tui-gateway): add isolated session event listeners` |
 | 2026-07-26 05:47 EDT | Task 4 publish checkpoint | Branch and fork draft PR #2 are at `2b1f07162`; PR remains open, draft, and GitHub reports a clean merge state |
+| 2026-07-26 05:48 EDT | Final Task 4 documentation publish | `2fbd04c8d` pushed; local branch and `origin/feat/remote-control-protocol-v1` match |
+| 2026-07-26 05:54 EDT | Task 5 pause checkpoint | Parallel preflight complete; implementation owner interrupted before file creation or RED test; tracked worktree clean at `2fbd04c8d` |
 
 Tooling note: Hermes intentionally blocks ordinary wheel/sdist builds. A wheel smoke attempt failed at the repository's explicit distribution guard before packaging, so supported editable/source-install verification is authoritative for this slice.
 
 ## Open product/security decisions
 
-These do not block Task 1:
+These do not block the safe Task 5 subset:
 
 - explicit acceptance of trusted-relay confidentiality risk;
 - selective five-minute offline prompt queue versus no offline commands;
