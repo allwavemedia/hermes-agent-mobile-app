@@ -1,10 +1,10 @@
 # Hermes Android Remote Control — Development Handoff
 
-Last refreshed: 2026-07-26 04:44 EDT
+Last refreshed: 2026-07-26 04:56 EDT
 
 Refresh owner: the active implementation agent
 
-Status: implementation authorized; Milestone 1 / Task 1 complete, Task 2 next
+Status: implementation authorized; Milestone 1 / Task 2 verified and ready to commit
 
 This is the canonical restart document for the implementation phase. It is intentionally operational and must describe the repository as it exists, not as the plan expects it to exist.
 
@@ -77,11 +77,11 @@ Task 1 delivered 13 shared literal validation fixtures, validators/types in both
 
 ## Current work and next exact steps
 
-1. Read Task 2 plus the protocol compatibility/reconnection invariants in `05-remote-control-protocol.md` and `15-reconnection-queueing.md`.
-2. Add `fast-check` as a development-only dependency and write reducer/compatibility property tests for duplicate idempotence, gap rejection, epoch reset, and highest-common-minor negotiation.
-3. Run `npm test --workspace apps/remote-control-protocol -- --run src/reducer.test.ts src/compatibility.test.ts`; expected RED is missing reducer/negotiator behavior, not runner failure.
-4. Implement the minimum pure reducer and compatibility rules, run at least 1,000 generated cases per property, then run the full protocol check.
-5. Refresh this handoff after red and green, and commit `feat(remote-protocol): add deterministic replay reducer`.
+1. Stage only the Task 2 protocol files, `package-lock.json`, and this handoff.
+2. Inspect the staged patch and run `git diff --cached --check`.
+3. Commit `feat(remote-protocol): add deterministic replay reducer`.
+4. Refresh this handoff with the commit hash in a documentation-only checkpoint commit.
+5. Start Task 3 only from a clean, independently restartable worktree.
 
 ## Latest verification evidence
 
@@ -103,6 +103,15 @@ Task 1 delivered 13 shared literal validation fixtures, validators/types in both
 | 2026-07-26 04:43 EDT | Hermetic wrapper for protocol plus project metadata tests | GREEN exit 0: 22 passed; same non-fatal Windows cp1252 progress traceback |
 | 2026-07-26 04:43 EDT | `git diff --check` | GREEN; only expected Windows LF-to-CRLF checkout warnings |
 | 2026-07-26 04:44 EDT | Task 1 atomic commit | `abf106e07bd734cddee23226bd6c2832c8a93488` |
+| 2026-07-26 04:49 EDT | `npm test --workspace apps/remote-control-protocol -- --run src/reducer.test.ts src/compatibility.test.ts` | Intended RED: 2 files, 8 failed assertions because reducer/negotiator modules do not exist |
+| 2026-07-26 04:50 EDT | Same focused Task 2 command after minimal implementation | GREEN: 2 files, 8 tests; each property ran 1,000 generated cases |
+| 2026-07-26 04:52 EDT | Reducer bounded-history test | Intended RED: identity-window constant absent |
+| 2026-07-26 04:53 EDT | Same reducer test after a 4,096-identity cap | GREEN: 1 file, 5 tests; state growth remains bounded between snapshots |
+| 2026-07-26 04:54 EDT | `npm run check --workspace apps/remote-control-protocol` | GREEN: typecheck, zero lint findings, 3 files/22 tests, six-schema build gate |
+| 2026-07-26 04:54 EDT | `npm test --workspace tests-js -- --run` | GREEN: 3 files, 9 tests |
+| 2026-07-26 04:54 EDT | `fast-check@4.9.0` dependency review | MIT, development-only, locked with `pure-rand@8.4.2`; no new runtime dependency |
+| 2026-07-26 04:54 EDT | `git diff --check` | GREEN; only expected Windows LF-to-CRLF checkout warnings |
+| 2026-07-26 04:56 EDT | Final protocol check after predecessor-link coverage review | GREEN: 3 files, 22 tests; gap property covers both missing sequence and wrong `prevSeq` |
 
 Tooling note: Hermes intentionally blocks ordinary wheel/sdist builds. A wheel smoke attempt failed at the repository's explicit distribution guard before packaging, so supported editable/source-install verification is authoritative for this slice.
 
