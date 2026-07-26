@@ -1,6 +1,6 @@
 # Hermes Android Remote Control — Development Handoff
 
-Last refreshed: 2026-07-26 04:56 EDT
+Last refreshed: 2026-07-26 04:58 EDT
 
 Refresh owner: the active implementation agent
 
@@ -35,6 +35,7 @@ Never copy secrets, credentials, private keys, pairing capabilities, cloud subsc
 | Upstream baseline | `21a2185f86f64be10d28bec1ecc576d89230f761` |
 | Planning worktree | `A:\Hermes Mobile App\hermes-android-remote-control-plan` |
 | Planning draft PR | `https://github.com/allwavemedia/hermes-agent-mobile-app/pull/1` |
+| Implementation draft PR | `https://github.com/allwavemedia/hermes-agent-mobile-app/pull/2` |
 
 The implementation branch is intentionally stacked on the documentation branch until the planning PR is merged. Do not rebase it onto `main` without first checking the PR/base state and preserving the handoff.
 
@@ -70,6 +71,7 @@ For Android work, use the installed official skills at `C:\Users\ldoby\.codex\sk
 - Planning branch pushed and documentation-only draft PR #1 opened.
 - Official Android skills installed for Codex.
 - Isolated implementation worktree and branch created from planning commit `28e1bb59d`.
+- Implementation branch pushed and stacked draft PR #2 opened against `plan/hermes-android-remote-control`.
 
 - `abf106e07bd734cddee23226bd6c2832c8a93488` — `feat(remote-protocol): define validated v1 contract`
 - `b651ed53f9320807419a54b82f8d7fee25ffb5b6` — `feat(remote-protocol): add deterministic replay reducer`
@@ -116,6 +118,7 @@ Task 2 delivered immutable ordered replay results, duplicate/gap/conflict/epoch-
 | 2026-07-26 04:54 EDT | `git diff --check` | GREEN; only expected Windows LF-to-CRLF checkout warnings |
 | 2026-07-26 04:56 EDT | Final protocol check after predecessor-link coverage review | GREEN: 3 files, 22 tests; gap property covers both missing sequence and wrong `prevSeq` |
 | 2026-07-26 04:56 EDT | Task 2 atomic commit | `b651ed53f9320807419a54b82f8d7fee25ffb5b6` |
+| 2026-07-26 04:58 EDT | Publish checkpoint | Branch tracks `origin/feat/remote-control-protocol-v1`; stacked draft PR #2 is open |
 
 Tooling note: Hermes intentionally blocks ordinary wheel/sdist builds. A wheel smoke attempt failed at the repository's explicit distribution guard before packaging, so supported editable/source-install verification is authoritative for this slice.
 
