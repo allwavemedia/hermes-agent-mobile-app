@@ -1,10 +1,10 @@
 # Hermes Android Remote Control — Development Handoff
 
-Last refreshed: 2026-07-26 05:26 EDT
+Last refreshed: 2026-07-26 05:27 EDT
 
 Refresh owner: the active implementation agent
 
-Status: implementation authorized; Milestone 1 / Task 3 complete and commit-ready
+Status: implementation authorized; Milestone 1 complete, Milestone 2 / Task 4 next
 
 This is the canonical restart document for the implementation phase. It is intentionally operational and must describe the repository as it exists, not as the plan expects it to exist.
 
@@ -75,6 +75,7 @@ For Android work, use the installed official skills at `C:\Users\ldoby\.codex\sk
 
 - `abf106e07bd734cddee23226bd6c2832c8a93488` — `feat(remote-protocol): define validated v1 contract`
 - `b651ed53f9320807419a54b82f8d7fee25ffb5b6` — `feat(remote-protocol): add deterministic replay reducer`
+- `daca7c231` — `feat(remote-protocol): bind signed capabilities and risk`
 
 Task 1 delivered 13 shared literal validation fixtures, validators/types in both runtimes, a direct pinned Python `remote-control` extra, and a build-time schema copy/byte-identity gate. Pairing public JWKs reject private key material.
 
@@ -86,9 +87,8 @@ Task 3 delivered shared RFC 8785/ES256 vectors, canonical hashes, strict protect
 
 ## Current work and next exact steps
 
-1. Create and push the atomic Task 3 commit `feat(remote-protocol): bind signed capabilities and risk`.
-2. Record the resulting commit and PR checkpoint here.
-3. Begin Task 4 by reading current `tui_gateway/transport.py`, `tui_gateway/server.py`, their focused tests/instructions, and then write the listener-hub tests for the intended RED.
+1. Push the Task 3 commit and this documentation checkpoint to draft PR #2.
+2. Begin Task 4 by reading current `tui_gateway/transport.py`, `tui_gateway/server.py`, their focused tests/instructions, and then write the listener-hub tests for the intended RED.
 
 ## Latest verification evidence
 
@@ -135,6 +135,7 @@ Task 3 delivered shared RFC 8785/ES256 vectors, canonical hashes, strict protect
 | 2026-07-26 05:23 EDT | Canonical repository runner via Git Bash/Windows venv | GREEN exit 0: 3 files / 26 tests; same non-fatal cp1252 progress callback traceback |
 | 2026-07-26 05:24 EDT | Exact target-context tests | Intended RED then GREEN: both runtimes now reject a signed device/session target when caller omits either binding |
 | 2026-07-26 05:25 EDT | Final Task 3 commit gate | GREEN: protocol 5 files / 29 tests plus type/lint/schema gate; root JavaScript 9 tests; Python Ruff/ty clean and 26 focused tests; `git diff --check` clean except expected line-ending notices |
+| 2026-07-26 05:26 EDT | Task 3 atomic commit | `daca7c231` — `feat(remote-protocol): bind signed capabilities and risk` |
 
 Tooling note: Hermes intentionally blocks ordinary wheel/sdist builds. A wheel smoke attempt failed at the repository's explicit distribution guard before packaging, so supported editable/source-install verification is authoritative for this slice.
 
