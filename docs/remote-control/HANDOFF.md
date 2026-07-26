@@ -1,6 +1,6 @@
 # Hermes Android Remote Control — Development Handoff
 
-Last refreshed: 2026-07-26 13:24 EDT
+Last refreshed: 2026-07-26 13:27 EDT
 
 Refresh owner: the active implementation agent
 
@@ -36,7 +36,7 @@ Never copy secrets, credentials, private keys, pairing capabilities, cloud subsc
 | Upstream baseline | `21a2185f86f64be10d28bec1ecc576d89230f761` |
 | Planning worktree | `A:\Hermes Mobile App\hermes-android-remote-control-plan` |
 | Planning draft PR | `https://github.com/allwavemedia/hermes-agent-mobile-app/pull/1` |
-| Implementation draft PR | `https://github.com/allwavemedia/hermes-agent-mobile-app/pull/2` — OPEN / DRAFT / CLEAN; head `464351924`, base `plan/hermes-android-remote-control`; `feat(remote-control): establish secure protocol and gateway adapter` |
+| Implementation draft PR | `https://github.com/allwavemedia/hermes-agent-mobile-app/pull/2` — OPEN / DRAFT / CLEAN; head follows the current `feat/remote-control-protocol-v1` branch, base `plan/hermes-android-remote-control`; `feat(remote-control): establish secure protocol and gateway adapter`. Run `git rev-parse HEAD` and `gh pr view 2` for the exact current values. |
 
 The implementation branch is intentionally stacked on the documentation branch until the planning PR is merged. Do not rebase it onto `main` without first checking the PR/base state and preserving the handoff.
 
@@ -115,7 +115,7 @@ The implementation owner created both required test files before production adap
 
 Independent review fix round 1 reproduced four blocking findings before production changes: `/tmp` path leakage, duplicate per-subscriber normalization/identity, snapshot/subscription cursor races, and lost critical metadata on the real subscription path. The final design uses one persistent bounded upstream listener, one sequence-locked snapshot boundary, and atomic cursor validation plus sink registration. A Task 4 reset invalidates the closed upstream handle so a fresh post-snapshot listener can be established.
 
-All four Important findings were fixed in round 1, and the scoped independent re-review passed. One Minor cursor-boundary duplicate-delivery/test weakness is explicitly deferred to Task 6, where the complete simultaneous-client lifecycle and replay boundary belong. Task 5 commit `464351924a2ad71f95cf28ffa43872fd8e734fcf` is published on `origin/feat/remote-control-protocol-v1`; draft PR #2 is open, draft, and clean at that head.
+All four Important findings were fixed in round 1, and the scoped independent re-review passed. One Minor cursor-boundary duplicate-delivery/test weakness is explicitly deferred to Task 6, where the complete simultaneous-client lifecycle and replay boundary belong. Reviewed Task 5 implementation commit `464351924a2ad71f95cf28ffa43872fd8e734fcf` is published in the history of `origin/feat/remote-control-protocol-v1`; draft PR #2 is open, draft, and clean at the current branch head. Run `git rev-parse HEAD` and `gh pr view 2` for the exact current branch and PR heads.
 
 ## Current work and next exact steps
 
@@ -130,7 +130,7 @@ Task 5 is complete, reviewed, and published. Task 6 is the next work item; no Ta
 
 | Time | Command | Result |
 |---|---|---|
-| 2026-07-26 13:24 EDT | Task 5 publication and PR verification | `origin/feat/remote-control-protocol-v1` at reviewed implementation `464351924`; draft PR #2 OPEN / DRAFT / CLEAN with base `plan/hermes-android-remote-control` |
+| 2026-07-26 13:27 EDT | Task 5 publication and PR verification | Reviewed implementation `464351924` is published in the current branch history; draft PR #2 follows that branch and is OPEN / DRAFT / CLEAN with base `plan/hermes-android-remote-control`. Use `git rev-parse HEAD` / `gh pr view 2` for exact current heads. |
 | 2026-07-26 13:24 EDT | Scoped independent re-review | PASS: all four Important findings fixed in round 1; one Minor cursor-boundary duplicate-delivery/test weakness deferred to Task 6 |
 | 2026-07-26 13:14 EDT | `uv run pytest -q tests/tui_gateway/test_remote_adapter.py tests/tui_gateway/test_remote_event_normalization.py` | Fix round 1 final GREEN: 60 passed |
 | 2026-07-26 13:14 EDT | Exact focused fix-round command before production changes | Intended RED: 6 failed / 54 passed for the four independent-review findings; reset lifecycle follow-up intentionally RED at 1 failed / 59 passed |
