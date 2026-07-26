@@ -1,6 +1,6 @@
 # Hermes Android Remote Control — Development Handoff
 
-Last refreshed: 2026-07-26 05:46 EDT
+Last refreshed: 2026-07-26 05:48 EDT
 
 Refresh owner: the active implementation agent
 
@@ -150,6 +150,7 @@ Task 4 delivered a bounded asynchronous listener queue per `(sessionId, subscrib
 | 2026-07-26 05:43 EDT | Per-session write/publish ordering lock | GREEN: focused hub 5 tests; Ruff and ty clean |
 | 2026-07-26 05:44 EDT | Final Task 4 canonical focused gate | GREEN exit 0: 1 file / 5 tests; `git diff --check` clean except expected line-ending notices |
 | 2026-07-26 05:45 EDT | Task 4 atomic commit | `b82922970` — `feat(tui-gateway): add isolated session event listeners` |
+| 2026-07-26 05:47 EDT | Task 4 publish checkpoint | Branch and fork draft PR #2 are at `2b1f07162`; PR remains open, draft, and GitHub reports a clean merge state |
 
 Tooling note: Hermes intentionally blocks ordinary wheel/sdist builds. A wheel smoke attempt failed at the repository's explicit distribution guard before packaging, so supported editable/source-install verification is authoritative for this slice.
 
