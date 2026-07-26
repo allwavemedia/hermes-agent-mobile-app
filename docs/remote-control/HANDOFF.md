@@ -4,7 +4,7 @@ Last refreshed: 2026-07-26 04:56 EDT
 
 Refresh owner: the active implementation agent
 
-Status: implementation authorized; Milestone 1 / Task 2 verified and ready to commit
+Status: implementation authorized; Milestone 1 / Task 2 complete, Task 3 next
 
 This is the canonical restart document for the implementation phase. It is intentionally operational and must describe the repository as it exists, not as the plan expects it to exist.
 
@@ -42,7 +42,7 @@ The implementation branch is intentionally stacked on the documentation branch u
 
 The user explicitly authorized development after the planning stop gate. Begin with reversible foundation slices. Do not create cloud resources, public endpoints, signing keys, or a public release without separate explicit approval. Do not claim E2EE; the proposed MVP relay is content-trusted.
 
-Current slice: [Milestone 1, Task 2](22-test-first-implementation-plan.md#task-2--ordered-reducer-replay-and-compatibility), ordered reducer, replay, and compatibility.
+Current slice: [Milestone 1, Task 3](22-test-first-implementation-plan.md#task-3--canonical-signatures-capabilities-and-risk-policy), canonical signatures, capabilities, and risk policy.
 
 Task 1 execution corrections accepted during critical review:
 
@@ -72,16 +72,19 @@ For Android work, use the installed official skills at `C:\Users\ldoby\.codex\sk
 - Isolated implementation worktree and branch created from planning commit `28e1bb59d`.
 
 - `abf106e07bd734cddee23226bd6c2832c8a93488` — `feat(remote-protocol): define validated v1 contract`
+- `b651ed53f9320807419a54b82f8d7fee25ffb5b6` — `feat(remote-protocol): add deterministic replay reducer`
 
 Task 1 delivered 13 shared literal validation fixtures, validators/types in both runtimes, a direct pinned Python `remote-control` extra, and a build-time schema copy/byte-identity gate. Pairing public JWKs reject private key material.
 
+Task 2 delivered immutable ordered replay results, duplicate/gap/conflict/epoch-reset handling, a 4,096-entry identity cap, and fail-closed highest-common-minor negotiation. Seven properties run 1,000 generated cases each.
+
 ## Current work and next exact steps
 
-1. Stage only the Task 2 protocol files, `package-lock.json`, and this handoff.
-2. Inspect the staged patch and run `git diff --cached --check`.
-3. Commit `feat(remote-protocol): add deterministic replay reducer`.
-4. Refresh this handoff with the commit hash in a documentation-only checkpoint commit.
-5. Start Task 3 only from a clean, independently restartable worktree.
+1. Read Task 3 plus `06-pairing-identity-key-lifecycle.md`, the signature/replay sections of `07-threat-model.md`, and current Python JWT/crypto helpers.
+2. Define shared deterministic signature vectors and risk-policy cases before adding production code.
+3. Add `jose` only if the reviewed TypeScript implementation requires it; reuse the pinned Python cryptography/PyJWT stack.
+4. Run the Task 3 tests for the intended RED, then implement JCS bytes/digests, strict ES256 verification, capability hash, unknown-critical handling, and queue/step-up taxonomy.
+5. Refresh this handoff at each red/green boundary and commit the independently verified Task 3 slice.
 
 ## Latest verification evidence
 
@@ -112,6 +115,7 @@ Task 1 delivered 13 shared literal validation fixtures, validators/types in both
 | 2026-07-26 04:54 EDT | `fast-check@4.9.0` dependency review | MIT, development-only, locked with `pure-rand@8.4.2`; no new runtime dependency |
 | 2026-07-26 04:54 EDT | `git diff --check` | GREEN; only expected Windows LF-to-CRLF checkout warnings |
 | 2026-07-26 04:56 EDT | Final protocol check after predecessor-link coverage review | GREEN: 3 files, 22 tests; gap property covers both missing sequence and wrong `prevSeq` |
+| 2026-07-26 04:56 EDT | Task 2 atomic commit | `b651ed53f9320807419a54b82f8d7fee25ffb5b6` |
 
 Tooling note: Hermes intentionally blocks ordinary wheel/sdist builds. A wheel smoke attempt failed at the repository's explicit distribution guard before packaging, so supported editable/source-install verification is authoritative for this slice.
 
