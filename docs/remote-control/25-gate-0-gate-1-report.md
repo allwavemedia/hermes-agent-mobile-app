@@ -90,9 +90,9 @@ Proposed runtime dependencies are MIT/Apache-2.0/PostgreSQL-compatible except Go
 
 ## Change-control status
 
-This branch contains documentation only under `docs/remote-control/`. Production source, dependencies, scaffolding, cloud resources, endpoints, signing keys, and builds were not changed or created. Commit and draft PR identifiers are filled after repository validation and push:
+This branch contains documentation only under `docs/remote-control/`. Production source, dependencies, scaffolding, cloud resources, endpoints, signing keys, and builds were not changed or created. The fork `main` was safely fast-forwarded from `6ffd7302bf4a2178d784f0d296fb8094a48a5bf4` to the selected upstream baseline before opening the PR, so upstream’s intervening production commits are not part of the PR diff.
 
-- Documentation commits: pending
-- Draft PR: pending
+- Documentation commits: `6a8b1598a` (baseline/architecture), `18c85e624` (protocol/security), `cb132606c` (delivery plan/gate review)
+- Draft PR: [allwavemedia/hermes-agent-mobile-app#1](https://github.com/allwavemedia/hermes-agent-mobile-app/pull/1)
 
 Gate 1 approval authorizes implementation planning to be executed in later PRs; it does not authorize deployment, signing-key creation, or public release by itself.
