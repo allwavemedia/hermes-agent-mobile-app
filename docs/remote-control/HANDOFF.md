@@ -1,10 +1,10 @@
 # Hermes Android Remote Control — Development Handoff
 
-Last refreshed: 2026-07-26 05:45 EDT
+Last refreshed: 2026-07-26 05:46 EDT
 
 Refresh owner: the active implementation agent
 
-Status: implementation authorized; Milestone 2 / Task 4 commit-ready
+Status: implementation authorized; Milestone 2 / Task 4 complete, Task 5 next
 
 This is the canonical restart document for the implementation phase. It is intentionally operational and must describe the repository as it exists, not as the plan expects it to exist.
 
@@ -76,6 +76,7 @@ For Android work, use the installed official skills at `C:\Users\ldoby\.codex\sk
 - `abf106e07bd734cddee23226bd6c2832c8a93488` — `feat(remote-protocol): define validated v1 contract`
 - `b651ed53f9320807419a54b82f8d7fee25ffb5b6` — `feat(remote-protocol): add deterministic replay reducer`
 - `daca7c231` — `feat(remote-protocol): bind signed capabilities and risk`
+- `b82922970` — `feat(tui-gateway): add isolated session event listeners`
 
 Task 1 delivered 13 shared literal validation fixtures, validators/types in both runtimes, a direct pinned Python `remote-control` extra, and a build-time schema copy/byte-identity gate. Pairing public JWKs reject private key material.
 
@@ -89,9 +90,9 @@ Task 4 delivered a bounded asynchronous listener queue per `(sessionId, subscrib
 
 ## Current work and next exact steps
 
-1. Review the Task 4 diff, run `git diff --check`, and commit atomically as `feat(tui-gateway): add isolated session event listeners`.
-2. Push the commit and handoff checkpoint to draft PR #2.
-3. Begin Task 5 by reading current snapshot/session/event representations and writing adapter/normalization fixtures before production code.
+1. Push the Task 4 commit and this handoff checkpoint to draft PR #2.
+2. Begin Task 5 by reading current snapshot/session/event representations and existing gateway event tests.
+3. Write snapshot redaction, known-event normalization, unknown-critical rejection, and generic-RPC denial fixtures/tests before production adapter code.
 
 ## Latest verification evidence
 
@@ -148,6 +149,7 @@ Task 4 delivered a bounded asynchronous listener queue per `(sessionId, subscrib
 | 2026-07-26 05:42 EDT | Concurrent local/remote ordering test | Intended RED: local transport order was `[1, 2]` while the listener observed `[2, 1]` under racing writers |
 | 2026-07-26 05:43 EDT | Per-session write/publish ordering lock | GREEN: focused hub 5 tests; Ruff and ty clean |
 | 2026-07-26 05:44 EDT | Final Task 4 canonical focused gate | GREEN exit 0: 1 file / 5 tests; `git diff --check` clean except expected line-ending notices |
+| 2026-07-26 05:45 EDT | Task 4 atomic commit | `b82922970` — `feat(tui-gateway): add isolated session event listeners` |
 
 Tooling note: Hermes intentionally blocks ordinary wheel/sdist builds. A wheel smoke attempt failed at the repository's explicit distribution guard before packaging, so supported editable/source-install verification is authoritative for this slice.
 
