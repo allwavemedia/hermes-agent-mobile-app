@@ -1,10 +1,10 @@
 # Hermes Android Remote Control — Development Handoff
 
-Last refreshed: 2026-07-26 04:43 EDT
+Last refreshed: 2026-07-26 04:44 EDT
 
 Refresh owner: the active implementation agent
 
-Status: implementation authorized; Milestone 1 / Task 1 verified and ready to commit
+Status: implementation authorized; Milestone 1 / Task 1 complete, Task 2 next
 
 This is the canonical restart document for the implementation phase. It is intentionally operational and must describe the repository as it exists, not as the plan expects it to exist.
 
@@ -42,9 +42,9 @@ The implementation branch is intentionally stacked on the documentation branch u
 
 The user explicitly authorized development after the planning stop gate. Begin with reversible foundation slices. Do not create cloud resources, public endpoints, signing keys, or a public release without separate explicit approval. Do not claim E2EE; the proposed MVP relay is content-trusted.
 
-Current slice: [Milestone 1, Task 1](22-test-first-implementation-plan.md#task-1--canonical-v1-schema-and-cross-runtime-validation), canonical v1 schema and cross-runtime validation.
+Current slice: [Milestone 1, Task 2](22-test-first-implementation-plan.md#task-2--ordered-reducer-replay-and-compatibility), ordered reducer, replay, and compatibility.
 
-Task 1 execution corrections identified during critical review:
+Task 1 execution corrections accepted during critical review:
 
 - Add `jsonschema==4.26.0` as a direct dependency of a dedicated `remote-control` extra because production Python code imports it; do not rely on its incidental presence in the development-only MCP stack or enlarge the default core install.
 - Make initial red tests fail by assertion on missing/unsupported behavior, not by test-runner configuration or uncaught import errors.
@@ -71,15 +71,17 @@ For Android work, use the installed official skills at `C:\Users\ldoby\.codex\sk
 - Official Android skills installed for Codex.
 - Isolated implementation worktree and branch created from planning commit `28e1bb59d`.
 
-Task 1 now has 13 shared literal validation fixtures, validators/types in both runtimes, a direct pinned Python `remote-control` extra, and a build-time schema copy/byte-identity gate. Pairing public JWKs reject private key material. Final diff review and the atomic commit remain.
+- `abf106e07bd734cddee23226bd6c2832c8a93488` — `feat(remote-protocol): define validated v1 contract`
+
+Task 1 delivered 13 shared literal validation fixtures, validators/types in both runtimes, a direct pinned Python `remote-control` extra, and a build-time schema copy/byte-identity gate. Pairing public JWKs reject private key material.
 
 ## Current work and next exact steps
 
-1. Stage only the Task 1 files listed by `git status`, excluding ignored build/dependency/cache output.
-2. Inspect `git diff --cached --check`, the staged file list, and the complete staged patch.
-3. Commit `feat(remote-protocol): define validated v1 contract`.
-4. Refresh this file after the commit with the commit hash and make a documentation-only handoff commit.
-5. Begin Task 2 only after Task 1 is clean and independently restartable.
+1. Read Task 2 plus the protocol compatibility/reconnection invariants in `05-remote-control-protocol.md` and `15-reconnection-queueing.md`.
+2. Add `fast-check` as a development-only dependency and write reducer/compatibility property tests for duplicate idempotence, gap rejection, epoch reset, and highest-common-minor negotiation.
+3. Run `npm test --workspace apps/remote-control-protocol -- --run src/reducer.test.ts src/compatibility.test.ts`; expected RED is missing reducer/negotiator behavior, not runner failure.
+4. Implement the minimum pure reducer and compatibility rules, run at least 1,000 generated cases per property, then run the full protocol check.
+5. Refresh this handoff after red and green, and commit `feat(remote-protocol): add deterministic replay reducer`.
 
 ## Latest verification evidence
 
@@ -100,6 +102,7 @@ Task 1 now has 13 shared literal validation fixtures, validators/types in both r
 | 2026-07-26 04:43 EDT | `uv run --frozen --extra dev --extra remote-control ...` | GREEN: Ruff, ty, and 13 focused tests |
 | 2026-07-26 04:43 EDT | Hermetic wrapper for protocol plus project metadata tests | GREEN exit 0: 22 passed; same non-fatal Windows cp1252 progress traceback |
 | 2026-07-26 04:43 EDT | `git diff --check` | GREEN; only expected Windows LF-to-CRLF checkout warnings |
+| 2026-07-26 04:44 EDT | Task 1 atomic commit | `abf106e07bd734cddee23226bd6c2832c8a93488` |
 
 Tooling note: Hermes intentionally blocks ordinary wheel/sdist builds. A wheel smoke attempt failed at the repository's explicit distribution guard before packaging, so supported editable/source-install verification is authoritative for this slice.
 
