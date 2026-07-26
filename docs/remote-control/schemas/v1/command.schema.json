@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hermes-agent.invalid/schemas/remote-control/v1/command.schema.json",
+  "title": "Hermes Remote Control v1 Command Payload",
+  "oneOf": [
+    {"$ref": "#/$defs/prompt"},
+    {"$ref": "#/$defs/approval"},
+    {"$ref": "#/$defs/clarification"},
+    {"$ref": "#/$defs/runControl"},
+    {"$ref": "#/$defs/sessionCreate"}
+  ],
+  "$defs": {
+    "prompt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commandType", "text", "queueIfOffline"],
+      "properties": {
+        "commandType": {"const": "prompt.submit"},
+        "text": {"type": "string", "minLength": 1, "maxLength": 65536},
+        "queueIfOffline": {"type": "boolean"}
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commandType", "requestId", "approvalId", "toolCallId", "activeRunId", "decision", "actionDigest", "displayDigest", "requestEventSeq"],
+      "properties": {
+        "commandType": {"const": "approval.respond"},
+        "requestId": {"type": "string", "minLength": 8, "maxLength": 128},
+        "approvalId": {"type": "string", "minLength": 8, "maxLength": 128},
+        "toolCallId": {"type": "string", "minLength": 8, "maxLength": 128},
+        "activeRunId": {"type": "string", "minLength": 8, "maxLength": 128},
+        "decision": {"enum": ["approve_once", "deny"]},
+        "actionDigest": {"type": "string", "pattern": "^sha256-[A-Za-z0-9_-]{43}$"},
+        "displayDigest": {"type": "string", "pattern": "^sha256-[A-Za-z0-9_-]{43}$"},
+        "requestEventSeq": {"type": "integer", "minimum": 1},
+        "biometricSignature": {"type": "string", "minLength": 32, "maxLength": 8192}
+      }
+    },
+    "clarification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commandType", "requestId", "activeRunId", "requestEventSeq", "answer"],
+      "properties": {
+        "commandType": {"const": "clarify.respond"},
+        "requestId": {"type": "string", "minLength": 8, "maxLength": 128},
+        "activeRunId": {"type": "string", "minLength": 8, "maxLength": 128},
+        "requestEventSeq": {"type": "integer", "minimum": 1},
+        "answer": {"type": "string", "minLength": 1, "maxLength": 65536}
+      }
+    },
+    "runControl": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commandType", "activeRunId"],
+      "properties": {
+        "commandType": {"enum": ["session.interrupt", "session.steer"]},
+        "activeRunId": {"type": "string", "minLength": 8, "maxLength": 128},
+        "text": {"type": "string", "minLength": 1, "maxLength": 65536}
+      }
+    },
+    "sessionCreate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commandType", "projectId"],
+      "properties": {
+        "commandType": {"const": "session.create"},
+        "projectId": {"type": "string", "minLength": 1, "maxLength": 128},
+        "modelId": {"type": "string", "minLength": 1, "maxLength": 128},
+        "title": {"type": "string", "maxLength": 256},
+        "remoteEnable": {"type": "boolean"}
+      }
+    }
+  }
+}

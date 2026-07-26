@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hermes-agent.invalid/schemas/remote-control/v1/pairing.schema.json",
+  "title": "Hermes Remote Control v1 Pairing Message",
+  "oneOf": [
+    {"$ref": "#/$defs/offer"},
+    {"$ref": "#/$defs/claim"},
+    {"$ref": "#/$defs/confirmation"}
+  ],
+  "$defs": {
+    "base": {
+      "type": "object",
+      "required": ["pairingId", "issuedAt", "expiresAt"],
+      "properties": {
+        "pairingId": {"type": "string", "minLength": 8, "maxLength": 128},
+        "issuedAt": {"type": "string", "format": "date-time"},
+        "expiresAt": {"type": "string", "format": "date-time"}
+      }
+    },
+    "offer": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["pairingId", "issuedAt", "expiresAt", "messageType", "capability", "computerId", "computerName", "hostPublicJwk", "relayOrigin", "hostSignature"],
+          "properties": {
+            "pairingId": {"type": "string", "minLength": 8, "maxLength": 128},
+            "issuedAt": {"type": "string", "format": "date-time"},
+            "expiresAt": {"type": "string", "format": "date-time"},
+            "messageType": {"const": "pair.offer"},
+            "capability": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+            "computerId": {"type": "string", "minLength": 8, "maxLength": 128},
+            "computerName": {"type": "string", "minLength": 1, "maxLength": 128},
+            "hostPublicJwk": {"type": "object"},
+            "relayOrigin": {"type": "string", "format": "uri", "maxLength": 2048},
+            "directSpkiPin": {"type": "string", "pattern": "^sha256-[A-Za-z0-9_-]{43}$"},
+            "hostSignature": {"type": "string", "minLength": 32, "maxLength": 8192}
+          }
+        }
+      ]
+    },
+    "claim": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["pairingId", "issuedAt", "expiresAt", "messageType", "devicePublicJwk", "deviceNonce", "deviceSignature"],
+          "properties": {
+            "pairingId": {"type": "string", "minLength": 8, "maxLength": 128},
+            "issuedAt": {"type": "string", "format": "date-time"},
+            "expiresAt": {"type": "string", "format": "date-time"},
+            "messageType": {"const": "pair.claim"},
+            "devicePublicJwk": {"type": "object"},
+            "deviceNonce": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+            "deviceSignature": {"type": "string", "minLength": 32, "maxLength": 8192}
+          }
+        }
+      ]
+    },
+    "confirmation": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["pairingId", "issuedAt", "expiresAt", "messageType", "transcriptHash", "signature"],
+          "properties": {
+            "pairingId": {"type": "string", "minLength": 8, "maxLength": 128},
+            "issuedAt": {"type": "string", "format": "date-time"},
+            "expiresAt": {"type": "string", "format": "date-time"},
+            "messageType": {"enum": ["pair.confirm", "pair.accept", "pair.reject"]},
+            "transcriptHash": {"type": "string", "pattern": "^sha256-[A-Za-z0-9_-]{43}$"},
+            "signature": {"type": "string", "minLength": 32, "maxLength": 8192}
+          }
+        }
+      ]
+    }
+  }
+}
