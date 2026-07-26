@@ -10,7 +10,7 @@ Temporary queueing, multi-device routing, attachments, abuse controls and simple
 
 ## Decision
 
-Relay workers may decrypt content in MVP. Use TLS 1.3 in transit, AES-256-GCM per-computer encryption at rest, and ES256 device/host signatures for sensitive authorization/integrity. Offer zero relay content retention and pinned direct fallback. Product copy never says E2EE or zero knowledge.
+Relay workers may decrypt content in MVP. Use TLS 1.2 minimum and 1.3 preferred in transit, AES-256-GCM per-computer encryption at rest, and ES256 device/host signatures for sensitive authorization/integrity. TLS 1.2 is limited to modern AEAD/ECDHE policy for the Android API 24 floor; older versions are disabled. Offer zero relay content retention and pinned direct fallback. Product copy never says E2EE or zero knowledge.
 
 ## Consequences
 

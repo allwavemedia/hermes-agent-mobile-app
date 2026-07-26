@@ -16,8 +16,8 @@ That interface is broad but internal. A live session’s `transport` is replaced
 
 ```mermaid
 flowchart LR
-    A["Android app\nRN + focused Kotlin"] -->|TLS 1.3 / WSS| R["Remote-control relay\nNode + PostgreSQL"]
-    H["Hermes host broker\nWindows or macOS"] -->|TLS 1.3 / WSS| R
+    A["Android app\nRN + focused Kotlin"] -->|TLS 1.2+ / WSS| R["Remote-control relay\nNode + PostgreSQL"]
+    H["Hermes host broker\nWindows or macOS"] -->|TLS 1.2+ / WSS| R
     A -. "Pinned WSS\nLAN / Tailscale" .-> H
     H -->|Authenticated local IPC| S1["Existing Hermes session"]
     H -->|Authenticated local IPC| S2["Existing Hermes session"]
@@ -31,7 +31,7 @@ The Android app uses React Native 0.86’s supported New Architecture, TypeScrip
 
 ## Security decision
 
-MVP is content-trusted relay architecture. TLS 1.3 protects links. Relay queue/blob content is encrypted at rest with per-computer AES-256-GCM data-encryption keys wrapped by an operator key. Because relay application workers can decrypt content to route and validate it, the product MUST say “encrypted in transit and at rest,” never “end-to-end encrypted.”
+MVP is content-trusted relay architecture. TLS 1.2 or 1.3 protects links; 1.3 is preferred, while 1.2 is retained for the API 24 floor with modern cipher policy. Relay queue/blob content is encrypted at rest with per-computer AES-256-GCM data-encryption keys wrapped by an operator key. Because relay application workers can decrypt content to route and validate it, the product MUST say “encrypted in transit and at rest,” never “end-to-end encrypted.”
 
 Device and host identities are non-exportable P-256 keys where the platform permits. Security-sensitive envelopes are JWS ES256 signed and bind the computer, device, session, tool call, capability hash, event sequence, nonce/JTI, issue time, and expiry. Thus a compromised relay can observe content in MVP but cannot silently manufacture a valid approval or sensitive host command. One-time QR offers expire after two minutes and require bidirectional proof of possession. Revocation closes active channels and prevents new credentials.
 

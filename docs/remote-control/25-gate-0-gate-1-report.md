@@ -47,7 +47,7 @@ Recommended:
 - framework-neutral `apps/remote-control-protocol`;
 - optional Python host broker in existing gateway lifecycle;
 - new Node/PostgreSQL provider-neutral relay, one replica MVP;
-- trusted-relay content model, TLS 1.3, AES-256-GCM at rest, ES256 sensitive-command integrity;
+- trusted-relay content model, TLS 1.2 minimum/1.3 preferred, AES-256-GCM at rest, ES256 sensitive-command integrity;
 - two-minute proof-of-possession computer pairing;
 - explicit per-session enable by default, opt-in auto-enable;
 - temporary 15-minute/10-MiB relay queue or computer-level zero retention;

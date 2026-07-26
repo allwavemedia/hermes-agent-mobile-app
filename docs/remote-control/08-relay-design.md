@@ -36,7 +36,7 @@ All state transitions that consume pairing offers, revoke identities, or enqueue
 
 ## Encryption distinctions
 
-- **TLS 1.3:** link encryption/authentication between client and relay.
+- **TLS 1.2 or 1.3:** link encryption/authentication between client and relay. TLS 1.3 is preferred; TLS 1.2 with modern AEAD/ECDHE suites supports the Android API 24 floor. Older protocol versions are disabled.
 - **At-rest encryption:** each content record uses a random 96-bit nonce and AES-256-GCM under a per-computer DEK; AAD binds table, row ID, computer ID, protocol/type, and expiry. DEKs are wrapped by an operator KEK and versioned.
 - **Signatures:** JWS ES256 binds paired actor and security-sensitive content; signatures provide authenticity/integrity, not confidentiality.
 - **E2EE:** not present in MVP, because relay workers obtain DEKs to route/validate content.

@@ -1,6 +1,6 @@
 flowchart LR
-    A["Android app"] -->|"TLS 1.3 WSS"| R["Remote-control relay"]
-    H["Host broker"] -->|"TLS 1.3 WSS outbound"| R
+    A["Android app"] -->|"TLS 1.2+ WSS"| R["Remote-control relay"]
+    H["Host broker"] -->|"TLS 1.2+ WSS outbound"| R
     A -. "Pinned WSS direct" .-> H
     H -->|"Authenticated AF_PIPE / AF_UNIX"| G["Gateway session adapter"]
     G --> S1["Hermes session A"]
