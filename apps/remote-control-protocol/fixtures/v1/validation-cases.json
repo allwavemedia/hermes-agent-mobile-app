@@ -1,0 +1,243 @@
+[
+  {
+    "name": "accepts a minimal signed envelope",
+    "schema": "envelope",
+    "expected": true,
+    "value": {
+      "protocol": "hermes.remote-control/1.0",
+      "envelopeId": "env_00000001",
+      "kind": "command",
+      "type": "prompt.submit",
+      "computerId": "cmp_00000001",
+      "deviceId": "dev_00000001",
+      "sessionId": "ses_00000001",
+      "issuedAt": "2026-07-26T08:00:00Z",
+      "expiresAt": "2026-07-26T08:05:00Z",
+      "jti": "jti_00000001",
+      "payload": {},
+      "signature": "aaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbb.cccccccccccccccc"
+    }
+  },
+  {
+    "name": "rejects an envelope from another protocol version",
+    "schema": "envelope",
+    "expected": false,
+    "value": {
+      "protocol": "hermes.remote-control/2.0",
+      "envelopeId": "env_00000001",
+      "kind": "command",
+      "type": "prompt.submit",
+      "computerId": "cmp_00000001",
+      "issuedAt": "2026-07-26T08:00:00Z",
+      "expiresAt": "2026-07-26T08:05:00Z",
+      "jti": "jti_00000001",
+      "payload": {},
+      "signature": "aaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbb.cccccccccccccccc"
+    }
+  },
+  {
+    "name": "accepts a contiguous session event",
+    "schema": "event",
+    "expected": true,
+    "value": {
+      "seq": 9,
+      "prevSeq": 8,
+      "eventId": "evt_00000009",
+      "occurredAt": "2026-07-26T08:00:01Z",
+      "eventType": "message.delta",
+      "data": {"text": "hello"}
+    }
+  },
+  {
+    "name": "rejects a zero event sequence",
+    "schema": "event",
+    "expected": false,
+    "value": {
+      "seq": 0,
+      "prevSeq": 0,
+      "eventId": "evt_00000000",
+      "occurredAt": "2026-07-26T08:00:01Z",
+      "eventType": "message.delta",
+      "data": {}
+    }
+  },
+  {
+    "name": "accepts a bounded capability snapshot",
+    "schema": "capability",
+    "expected": true,
+    "value": {
+      "capabilityVersion": 1,
+      "computerId": "cmp_00000001",
+      "sessionId": "ses_00000001",
+      "sessionRevision": 4,
+      "issuedAt": "2026-07-26T08:00:00Z",
+      "expiresAt": "2026-07-26T08:05:00Z",
+      "methods": {
+        "prompt.submit": {
+          "risk": "low",
+          "offline": true,
+          "biometric": false,
+          "maxBytes": 65536
+        }
+      },
+      "constraints": {
+        "attachmentMaxBytes": 52428800,
+        "terminalRead": true,
+        "terminalWrite": false
+      },
+      "signature": "aaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbb.cccccccccccccccc"
+    }
+  },
+  {
+    "name": "rejects an unknown capability risk",
+    "schema": "capability",
+    "expected": false,
+    "value": {
+      "capabilityVersion": 1,
+      "computerId": "cmp_00000001",
+      "sessionId": "ses_00000001",
+      "sessionRevision": 4,
+      "issuedAt": "2026-07-26T08:00:00Z",
+      "expiresAt": "2026-07-26T08:05:00Z",
+      "methods": {
+        "approval.respond": {
+          "risk": "unbounded",
+          "offline": false,
+          "biometric": true
+        }
+      },
+      "constraints": {},
+      "signature": "aaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbb.cccccccccccccccc"
+    }
+  },
+  {
+    "name": "accepts a minimal session snapshot",
+    "schema": "snapshot",
+    "expected": true,
+    "value": {
+      "epoch": "epoch_00000001",
+      "snapshotSeq": 0,
+      "sessionRevision": 1,
+      "generatedAt": "2026-07-26T08:00:00Z",
+      "session": {
+        "id": "ses_00000001",
+        "title": "Remote session",
+        "status": "idle"
+      },
+      "transcript": [],
+      "activities": [],
+      "pendingRequests": [],
+      "terminals": [],
+      "attachments": [],
+      "capabilityHash": "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    }
+  },
+  {
+    "name": "rejects a snapshot with an unmodeled secret field",
+    "schema": "snapshot",
+    "expected": false,
+    "value": {
+      "epoch": "epoch_00000001",
+      "snapshotSeq": 0,
+      "sessionRevision": 1,
+      "generatedAt": "2026-07-26T08:00:00Z",
+      "session": {
+        "id": "ses_00000001",
+        "title": "Remote session",
+        "status": "idle"
+      },
+      "transcript": [],
+      "activities": [],
+      "pendingRequests": [],
+      "terminals": [],
+      "attachments": [],
+      "capabilityHash": "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "providerSecret": "must-not-cross-the-boundary"
+    }
+  },
+  {
+    "name": "accepts a low-risk prompt command",
+    "schema": "command",
+    "expected": true,
+    "value": {
+      "commandType": "prompt.submit",
+      "text": "Continue the current task.",
+      "queueIfOffline": false
+    }
+  },
+  {
+    "name": "rejects a permanent approval decision",
+    "schema": "command",
+    "expected": false,
+    "value": {
+      "commandType": "approval.respond",
+      "requestId": "req_00000001",
+      "approvalId": "apr_00000001",
+      "toolCallId": "tool_00000001",
+      "activeRunId": "run_00000001",
+      "decision": "always_allow",
+      "actionDigest": "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "displayDigest": "sha256-BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+      "requestEventSeq": 9
+    }
+  },
+  {
+    "name": "accepts a device pairing claim",
+    "schema": "pairing",
+    "expected": true,
+    "value": {
+      "pairingId": "pair_00000001",
+      "issuedAt": "2026-07-26T08:00:00Z",
+      "expiresAt": "2026-07-26T08:02:00Z",
+      "messageType": "pair.claim",
+      "devicePublicJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "y": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+      },
+      "deviceNonce": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+      "deviceSignature": "aaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbb.cccccccccccccccc"
+    }
+  },
+  {
+    "name": "rejects a pairing claim with unmodeled relay authority",
+    "schema": "pairing",
+    "expected": false,
+    "value": {
+      "pairingId": "pair_00000001",
+      "issuedAt": "2026-07-26T08:00:00Z",
+      "expiresAt": "2026-07-26T08:02:00Z",
+      "messageType": "pair.claim",
+      "devicePublicJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "y": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+      },
+      "deviceNonce": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+      "deviceSignature": "aaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbb.cccccccccccccccc",
+      "relayMayApprove": true
+    }
+  },
+  {
+    "name": "rejects private key material in a device public JWK",
+    "schema": "pairing",
+    "expected": false,
+    "value": {
+      "pairingId": "pair_00000001",
+      "issuedAt": "2026-07-26T08:00:00Z",
+      "expiresAt": "2026-07-26T08:02:00Z",
+      "messageType": "pair.claim",
+      "devicePublicJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "y": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "d": "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
+      },
+      "deviceNonce": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+      "deviceSignature": "aaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbb.cccccccccccccccc"
+    }
+  }
+]

@@ -8,9 +8,9 @@ Command assumptions: repository root; Python 3.11/3.13 via `uv`; Node 22; Postgr
 
 ### Task 1 — Canonical v1 schema and cross-runtime validation
 
-Files: `apps/remote-control-protocol/{package.json,tsconfig.json}`, `src/{index,types,validate,version}.ts`, `src/validate.test.ts`, `fixtures/v1/*.json`, `docs/remote-control/schemas/v1/{envelope,snapshot,event,capability}.schema.json`, `tests/remote_control/test_protocol_schema.py`, `remote_control/{__init__,models,protocol}.py`, `package-lock.json`.
+Files: `apps/remote-control-protocol/{package.json,tsconfig.json}`, `src/{index,types,validate,version}.ts`, `src/validate.test.ts`, `scripts/copy-schemas.mjs`, `fixtures/v1/*.json`, `docs/remote-control/schemas/v1/{envelope,snapshot,event,capability,command,pairing}.schema.json`, `tests/remote_control/test_protocol_schema.py`, `remote_control/{__init__,models,protocol}.py`, `package-lock.json`.
 
-1. Add valid/invalid fixture tests in TS and Python; run `npm test --workspace apps/remote-control-protocol -- --run src/validate.test.ts` and `uv run pytest -q tests/remote_control/test_protocol_schema.py`. Expected red: package/module/validator absent and fixtures cannot validate.
+1. Add valid/invalid fixture tests in TS and Python; run `npm test --workspace apps/remote-control-protocol -- --run src/validate.test.ts` and `uv run --extra remote-control pytest -q tests/remote_control/test_protocol_schema.py`. Expected red: package/module/validator absent and fixtures cannot validate.
 2. Add schemas, minimal types/validators, and schema-byte-identity check.
 3. Rerun both commands. Expected green: identical accept/reject result for every fixture, zero failures.
 4. Run `npm run check --workspace apps/remote-control-protocol && uv run ruff check remote_control tests/remote_control`.
@@ -30,7 +30,7 @@ Files: `apps/remote-control-protocol/src/{reducer,compatibility}.ts`, `src/{redu
 Files: `apps/remote-control-protocol/src/{canonicalize,risk}.ts`, `src/{canonicalize,risk}.test.ts`, `remote_control/{protocol,authorization}.py`, `tests/remote_control/test_protocol_signatures.py`.
 
 1. Add shared signature vectors plus unknown-critical, cross-target, expired, wrong-algorithm, stale-capability, and offline-policy tests. Run TS and Python tests; expected red: signature vectors/policy unsupported.
-2. Implement JCS digest helpers, ES256 verification, capability hash and queue/step-up taxonomy using `jose` and existing Python crypto/JWT libraries.
+2. Implement portable JCS bytes plus an asynchronous crypto-provider boundary, capability hash, and queue/step-up taxonomy. Verify the Node test adapter with `jose`, use existing Python crypto/JWT libraries on the host, and implement the same provider later through the focused Kotlin native module; do not import `node:crypto` into the shared package or assume React Native WebCrypto.
 3. Expected green: both runtimes verify the same vectors and reject every mutation.
 4. Commit `feat(remote-protocol): bind signed capabilities and risk`.
 

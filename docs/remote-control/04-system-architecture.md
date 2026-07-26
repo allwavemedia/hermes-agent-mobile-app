@@ -2,7 +2,7 @@
 
 ## Components
 
-1. **`apps/remote-control-protocol`** — TypeScript package containing versioned envelope types, generated validators from canonical JSON Schemas, state reducers, hashing/canonicalization, risk taxonomy, and compatibility tests. It has no React, Node transport, or Hermes implementation dependency.
+1. **`apps/remote-control-protocol`** — TypeScript package containing versioned envelope types, generated validators from canonical JSON Schemas, state reducers, hashing/canonicalization, risk taxonomy, and compatibility tests. It has no React, Node runtime/transport, or Hermes implementation dependency. Hashing and ES256 verification use a narrow asynchronous runtime adapter: Node/relay supplies `jose` plus platform hashing, Android supplies the focused Kotlin native module.
 2. **`remote_control`** — Python host package containing the broker, gateway adapter, listener hub bridge, local IPC, pairing, secure store, policy, relay/direct transports, replay journal, attachment mediation, and redacted audit.
 3. **`apps/remote-control-relay`** — Node TypeScript modular monolith using built-in HTTP, `ws`, `pg`, `jose`, and `ajv`. It authenticates paired public keys, routes live channels, persists bounded encrypted queues, enforces quota/expiry, and exposes health/metrics.
 4. **`apps/android`** — bare React Native 0.86 app using TypeScript and focused Kotlin TurboModules. It stores public metadata in DataStore and private keys in Android Keystore.
