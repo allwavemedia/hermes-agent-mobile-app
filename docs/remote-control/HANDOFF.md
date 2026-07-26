@@ -1,10 +1,10 @@
 # Hermes Android Remote Control — Development Handoff
 
-Last refreshed: 2026-07-26 13:14 EDT
+Last refreshed: 2026-07-26 13:24 EDT
 
 Refresh owner: the active implementation agent
 
-Status: Milestone 2 / Task 5 independent-review fix round 1 verified and ready for bounded re-review; not pushed
+Status: Milestone 2 / Task 5 complete, independently reviewed, and published; Task 6 has not started
 
 This is the canonical restart document for the implementation phase. It is intentionally operational and must describe the repository as it exists, not as the plan expects it to exist.
 
@@ -30,12 +30,13 @@ Never copy secrets, credentials, private keys, pairing capabilities, cloud subsc
 | Implementation worktree | `A:\Hermes Mobile App\hermes-remote-control-implementation` |
 | Implementation branch | `feat/remote-control-protocol-v1` |
 | Implementation HEAD | Run `git rev-parse HEAD`; this self-updating file intentionally does not hardcode its own commit |
+| Published Task 5 implementation | `464351924a2ad71f95cf28ffa43872fd8e734fcf` |
 | Stacked base branch | `plan/hermes-android-remote-control` |
 | Stacked base commit | `28e1bb59dfee7c54340fbc0798e1dba69516b708` |
 | Upstream baseline | `21a2185f86f64be10d28bec1ecc576d89230f761` |
 | Planning worktree | `A:\Hermes Mobile App\hermes-android-remote-control-plan` |
 | Planning draft PR | `https://github.com/allwavemedia/hermes-agent-mobile-app/pull/1` |
-| Implementation draft PR | `https://github.com/allwavemedia/hermes-agent-mobile-app/pull/2` |
+| Implementation draft PR | `https://github.com/allwavemedia/hermes-agent-mobile-app/pull/2` — OPEN / DRAFT / CLEAN; head `464351924`, base `plan/hermes-android-remote-control`; `feat(remote-control): establish secure protocol and gateway adapter` |
 
 The implementation branch is intentionally stacked on the documentation branch until the planning PR is merged. Do not rebase it onto `main` without first checking the PR/base state and preserving the handoff.
 
@@ -43,7 +44,7 @@ The implementation branch is intentionally stacked on the documentation branch u
 
 The user explicitly authorized development after the planning stop gate. Begin with reversible foundation slices. Do not create cloud resources, public endpoints, signing keys, or a public release without separate explicit approval. Do not claim E2EE; the proposed MVP relay is content-trusted.
 
-Current slice: [Milestone 2, Task 5](22-test-first-implementation-plan.md#task-5--stable-snapshotevent-adapter), stable snapshot/event adapter.
+Next slice: [Milestone 2, Task 6](22-test-first-implementation-plan.md#task-6--simultaneous-desktoptui-and-remote-clients), simultaneous Desktop/TUI and remote clients. No Task 6 implementation or RED test has started.
 
 Durable implementation constraints accepted during critical review:
 
@@ -88,6 +89,7 @@ For Android work, use the installed official skills at `C:\Users\ldoby\.codex\sk
 - `daca7c231` — `feat(remote-protocol): bind signed capabilities and risk`
 - `b82922970` — `feat(tui-gateway): add isolated session event listeners`
 - `2fbd04c8d` — `docs(remote-control): record gateway task 4 publish`
+- `464351924a2ad71f95cf28ffa43872fd8e734fcf` — `feat(remote-host): add stable gateway session adapter`
 
 Task 1 delivered 13 shared literal validation fixtures, validators/types in both runtimes, a direct pinned Python `remote-control` extra, and a build-time schema copy/byte-identity gate. Pairing public JWKs reject private key material.
 
@@ -113,18 +115,23 @@ The implementation owner created both required test files before production adap
 
 Independent review fix round 1 reproduced four blocking findings before production changes: `/tmp` path leakage, duplicate per-subscriber normalization/identity, snapshot/subscription cursor races, and lost critical metadata on the real subscription path. The final design uses one persistent bounded upstream listener, one sequence-locked snapshot boundary, and atomic cursor validation plus sink registration. A Task 4 reset invalidates the closed upstream handle so a fresh post-snapshot listener can be established.
 
+All four Important findings were fixed in round 1, and the scoped independent re-review passed. One Minor cursor-boundary duplicate-delivery/test weakness is explicitly deferred to Task 6, where the complete simultaneous-client lifecycle and replay boundary belong. Task 5 commit `464351924a2ad71f95cf28ffa43872fd8e734fcf` is published on `origin/feat/remote-control-protocol-v1`; draft PR #2 is open, draft, and clean at that head.
+
 ## Current work and next exact steps
 
-Task 5 fix round 1 is verified locally and ready for controller-owned bounded re-review from baseline `2fbd04c8d`.
+Task 5 is complete, reviewed, and published. Task 6 is the next work item; no Task 6 implementation, test, or preflight artifact has started.
 
-1. Inspect the amended Task 5 atomic commit and fix-round appendix at `.superpowers/sdd/22-test-first-implementation-plan/task-5-report.md`.
-2. Re-run the bounded independent spec/quality review against all prior findings and return any blockers to the same implementation owner.
-3. Do not push or update draft PR #2 until the controller completes review and explicitly proceeds.
+1. Read the Task 6 section of `docs/remote-control/22-test-first-implementation-plan.md` and the current Task 5 adapter/listener contracts.
+2. Reconcile the deferred Minor cursor-boundary duplicate-delivery/test weakness into the Task 6 test-first brief.
+3. Start Task 6 with its required intentional RED behavior tests before production changes.
+4. Preserve the published Task 5 commit and current draft PR state until the next explicitly authorized publish checkpoint.
 
 ## Latest verification evidence
 
 | Time | Command | Result |
 |---|---|---|
+| 2026-07-26 13:24 EDT | Task 5 publication and PR verification | `origin/feat/remote-control-protocol-v1` at reviewed implementation `464351924`; draft PR #2 OPEN / DRAFT / CLEAN with base `plan/hermes-android-remote-control` |
+| 2026-07-26 13:24 EDT | Scoped independent re-review | PASS: all four Important findings fixed in round 1; one Minor cursor-boundary duplicate-delivery/test weakness deferred to Task 6 |
 | 2026-07-26 13:14 EDT | `uv run pytest -q tests/tui_gateway/test_remote_adapter.py tests/tui_gateway/test_remote_event_normalization.py` | Fix round 1 final GREEN: 60 passed |
 | 2026-07-26 13:14 EDT | Exact focused fix-round command before production changes | Intended RED: 6 failed / 54 passed for the four independent-review findings; reset lifecycle follow-up intentionally RED at 1 failed / 59 passed |
 | 2026-07-26 13:14 EDT | `uv run pytest -q tests/tui_gateway/test_protocol.py tests/tui_gateway/test_remote_event_hub.py tests/gateway/test_tui_approval_redaction.py tests/remote_control/test_protocol_schema.py` | Exact broader regression GREEN: 119 passed |
@@ -192,7 +199,6 @@ Task 5 fix round 1 is verified locally and ready for controller-owned bounded re
 | 2026-07-26 05:45 EDT | Task 4 atomic commit | `b82922970` — `feat(tui-gateway): add isolated session event listeners` |
 | 2026-07-26 05:47 EDT | Task 4 publish checkpoint | Branch and fork draft PR #2 are at `2b1f07162`; PR remains open, draft, and GitHub reports a clean merge state |
 | 2026-07-26 05:48 EDT | Final Task 4 documentation publish | `2fbd04c8d` pushed; local branch and `origin/feat/remote-control-protocol-v1` match |
-| 2026-07-26 05:54 EDT | Task 5 pause checkpoint | Parallel preflight complete; implementation owner interrupted before file creation or RED test; tracked worktree clean at `2fbd04c8d` |
 
 Tooling note: Hermes intentionally blocks ordinary wheel/sdist builds. A wheel smoke attempt failed at the repository's explicit distribution guard before packaging, so supported editable/source-install verification is authoritative for this slice.
 
