@@ -1661,6 +1661,29 @@ def handle_request(req: dict) -> dict | None:
     return fn(rid, params)
 
 
+def invoke_remote_session_command(
+    command_type: str,
+    request_id: str,
+    params: dict,
+) -> dict:
+    """Invoke one fixed remote-safe handler without taking session transport."""
+
+    if command_type == "prompt.submit":
+        handler = _methods["prompt.submit"]
+    elif command_type == "session.steer":
+        handler = _methods["session.steer"]
+    elif command_type == "session.interrupt":
+        handler = _methods["session.interrupt"]
+    else:
+        raise ValueError("remote command is not supported")
+
+    token = bind_transport(None)
+    try:
+        return handler(request_id, params)
+    finally:
+        reset_transport(token)
+
+
 def dispatch(req: dict, transport: Optional[Transport] = None) -> dict | None:
     """Route inbound RPCs — long handlers to the pool, everything else inline.
 

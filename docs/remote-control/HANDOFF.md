@@ -1,10 +1,10 @@
 # Hermes Android Remote Control — Development Handoff
 
-Last refreshed: 2026-07-26 05:54 EDT
+Last refreshed: 2026-07-26 13:14 EDT
 
 Refresh owner: the active implementation agent
 
-Status: development intentionally paused; Milestone 2 / Task 4 complete and published, Task 5 preflight complete but no Task 5 code or tests written
+Status: Milestone 2 / Task 5 independent-review fix round 1 verified and ready for bounded re-review; not pushed
 
 This is the canonical restart document for the implementation phase. It is intentionally operational and must describe the repository as it exists, not as the plan expects it to exist.
 
@@ -99,7 +99,7 @@ Task 3 delivered shared RFC 8785/ES256 vectors, canonical hashes, strict protect
 
 Task 4 delivered a bounded asynchronous listener queue per `(sessionId, subscriberId)`, independent deep-copied deliveries, exception isolation, one reset-required signal on overflow, and server publication only after the unchanged local transport write. A listener never replaces `session["transport"]` or runs inline on the agent path.
 
-Task 5 preflight used three parallel read-only subagents, followed by a planned single implementation owner. The source, security, and test-design reports are intentionally ignored working artifacts:
+Task 5 preflight used three parallel read-only subagents, followed by one implementation owner. The source, security, and test-design reports are nonbinding research artifacts; the reconciled brief is authoritative:
 
 - `.superpowers/sdd/22-test-first-implementation-plan/task-5-gateway-analysis.md`
 - `.superpowers/sdd/22-test-first-implementation-plan/task-5-security-analysis.md`
@@ -107,37 +107,37 @@ Task 5 preflight used three parallel read-only subagents, followed by a planned 
 - `.superpowers/sdd/22-test-first-implementation-plan/task-5-brief.md`
 - `.superpowers/sdd/22-test-first-implementation-plan/progress.md`
 
-The implementation owner was interrupted during design, before creating files or running the intended RED test. At the pause point, `HEAD` and `origin/feat/remote-control-protocol-v1` both resolve to `2fbd04c8d34eb25c226d74beac7ba9a1e157d571`, and the tracked worktree is clean.
+Task 5 delivered a typed stable adapter context, schema-valid allowlisted snapshots/capabilities/events, fixed command routing for only `prompt.submit`, `session.steer`, and `session.interrupt`, content-free fail-closed outcomes, bounded force-redacted text with absolute-path removal, and a server seam that neutralizes ambient transport before invoking one fixed handler. Raw RPC, unadvertised commands, offline queueing, terminal output, provider/error detail, tool arguments/results/diffs, subagent files/output tails, and attachment content remain unavailable. The adapter consumes one shared Task 4 listener copy stream, normalizes each event once before isolated fan-out, preserves strict source criticality, and never assigns `session["transport"]`.
+
+The implementation owner created both required test files before production adapter code. The first exact focused command reached intentional RED with 51 behavioral assertion failures because `GatewaySessionAdapter` was not yet exported; collection and environment setup succeeded. Follow-up source-shape and redaction tests were also observed failing before the corresponding changes.
+
+Independent review fix round 1 reproduced four blocking findings before production changes: `/tmp` path leakage, duplicate per-subscriber normalization/identity, snapshot/subscription cursor races, and lost critical metadata on the real subscription path. The final design uses one persistent bounded upstream listener, one sequence-locked snapshot boundary, and atomic cursor validation plus sink registration. A Task 4 reset invalidates the closed upstream handle so a fresh post-snapshot listener can be established.
 
 ## Current work and next exact steps
 
-Development is paused by user request. Do not resume implementation until the user asks.
+Task 5 fix round 1 is verified locally and ready for controller-owned bounded re-review from baseline `2fbd04c8d`.
 
-When resumed:
-
-1. Confirm the branch/worktree/PR state and read the Task 5 brief, three analysis reports, and the binding security boundary above.
-2. Use the parallel/subagent workflow: parallelize only independent read-only analysis or review; assign Task 5 tracked edits and its atomic commit to one implementation owner.
-3. Create `tests/tui_gateway/test_remote_adapter.py` and `tests/tui_gateway/test_remote_event_normalization.py` first. The first failure must be a behavioral assertion for missing adapter behavior, not an import/collection/configuration failure.
-4. Run the intended RED command:
-
-   ```powershell
-   uv run pytest -q tests/tui_gateway/test_remote_adapter.py tests/tui_gateway/test_remote_event_normalization.py
-   ```
-
-5. Implement only the safe Task 5 subset in `remote_control/adapter.py`, `remote_control/models.py`, the minimal `remote_control/__init__.py` export if required, and a narrow adapter-safe seam in `tui_gateway/server.py` only if required to prevent transport takeover.
-6. Re-run the focused command to GREEN, then the broader regressions:
-
-   ```powershell
-   uv run pytest -q tests/tui_gateway/test_protocol.py tests/tui_gateway/test_remote_event_hub.py tests/gateway/test_tui_approval_redaction.py tests/remote_control/test_protocol_schema.py
-   ```
-
-7. Run Ruff, ty, and `git diff --check`; self-review redaction, generic-dispatch denial, transport identity, and sequence behavior; create the atomic commit `feat(remote-host): add stable gateway session adapter`.
-8. Generate an SDD review package from base `2fbd04c8d`, assign an independent spec/quality reviewer, resolve all blocking findings through the same implementation owner, then refresh this file and push draft PR #2.
+1. Inspect the amended Task 5 atomic commit and fix-round appendix at `.superpowers/sdd/22-test-first-implementation-plan/task-5-report.md`.
+2. Re-run the bounded independent spec/quality review against all prior findings and return any blockers to the same implementation owner.
+3. Do not push or update draft PR #2 until the controller completes review and explicitly proceeds.
 
 ## Latest verification evidence
 
 | Time | Command | Result |
 |---|---|---|
+| 2026-07-26 13:14 EDT | `uv run pytest -q tests/tui_gateway/test_remote_adapter.py tests/tui_gateway/test_remote_event_normalization.py` | Fix round 1 final GREEN: 60 passed |
+| 2026-07-26 13:14 EDT | Exact focused fix-round command before production changes | Intended RED: 6 failed / 54 passed for the four independent-review findings; reset lifecycle follow-up intentionally RED at 1 failed / 59 passed |
+| 2026-07-26 13:14 EDT | `uv run pytest -q tests/tui_gateway/test_protocol.py tests/tui_gateway/test_remote_event_hub.py tests/gateway/test_tui_approval_redaction.py tests/remote_control/test_protocol_schema.py` | Exact broader regression GREEN: 119 passed |
+| 2026-07-26 13:14 EDT | Repository Ruff and scoped Task 5 ty commands | GREEN: all checks passed |
+| 2026-07-26 13:14 EDT | `git diff --check` | GREEN; only expected Windows LF-to-CRLF checkout notices |
+| 2026-07-26 12:51 EDT | `uv run pytest -q tests/tui_gateway/test_remote_adapter.py tests/tui_gateway/test_remote_event_normalization.py` | Final Task 5 GREEN: 55 passed |
+| 2026-07-26 12:50 EDT | `uv run pytest -q tests/tui_gateway/test_protocol.py tests/tui_gateway/test_remote_event_hub.py tests/gateway/test_tui_approval_redaction.py tests/remote_control/test_protocol_schema.py` | Exact broader regression GREEN: 119 passed |
+| 2026-07-26 12:50 EDT | `uv run --frozen --extra dev --extra remote-control ruff check .` | GREEN: repository Ruff check passed |
+| 2026-07-26 12:50 EDT | `uv run --frozen --extra dev --extra remote-control ty check remote_control/adapter.py remote_control/models.py remote_control/__init__.py tests/tui_gateway/test_remote_adapter.py tests/tui_gateway/test_remote_event_normalization.py` | GREEN: Task 5 adapter/model/export/tests ty check passed |
+| 2026-07-26 12:50 EDT | `git diff --check` | GREEN; only expected Windows LF-to-CRLF checkout notices |
+| 2026-07-26 12:45 EDT | Exact focused Task 5 command after current gateway producer-shape fixtures | Intended RED: 5 behavioral failures for missing tool-generating, project, subagent, and offline-queue behavior; subsequent GREEN 52 passed |
+| 2026-07-26 12:48 EDT | Exact focused Task 5 command after content-free error and absolute-path fixtures | Intended RED then GREEN: three error/path failures, then one UNC-path failure; final focused suite 55 passed |
+| 2026-07-26 12:37 EDT | `uv run pytest -q tests/tui_gateway/test_remote_adapter.py tests/tui_gateway/test_remote_event_normalization.py` | Intended Task 5 RED: 51 behavioral assertion failures because `GatewaySessionAdapter` is not exported; both requested files collected and the environment initialized successfully |
 | 2026-07-26 04:27 EDT | `npm test --workspace apps/remote-control-protocol -- --run src/validate.test.ts` | Intended RED: 1 file, 12 failed assertions because the TypeScript validator does not exist |
 | 2026-07-26 04:27 EDT | `uv run --frozen --extra dev pytest -q tests/remote_control/test_protocol_schema.py` | Intended RED: 12 failed assertions because the Python validator does not exist |
 | 2026-07-26 04:32 EDT | `npm test --workspace apps/remote-control-protocol -- --run src/validate.test.ts` | GREEN: 1 file, 12 passed |
