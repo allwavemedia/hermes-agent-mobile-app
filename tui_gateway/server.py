@@ -16,7 +16,7 @@ import time
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Any, NamedTuple, Optional
+from typing import Any, Callable, NamedTuple, Optional
 
 from hermes_constants import (
     get_hermes_home,
@@ -35,6 +35,9 @@ from tui_gateway.turn_marker import (
     record_turn_start,
 )
 from tui_gateway.transport import (
+    SessionEventHub,
+    SessionEventDelivery,
+    SessionEventSubscription,
     StdioTransport,
     Transport,
     bind_transport,
@@ -304,6 +307,7 @@ class _DropTransport:
 # contextvar or session. Stream resolved through a lambda so runtime monkey-
 # patches of `_real_stdout` (used extensively in tests) still land correctly.
 _stdio_transport = StdioTransport(lambda: _real_stdout, _stdout_lock)
+_session_event_hub = SessionEventHub()
 
 # Detached websocket sessions use a drop sink instead of stdio. Desktop embeds
 # the gateway in-process and captures stdout into logs, so stale JSON-RPC frames
@@ -1274,12 +1278,43 @@ def write_json(obj: dict) -> bool:
     3. Otherwise the module-level stdio transport, matching the historical
        behaviour and keeping tests that monkey-patch ``_real_stdout`` green.
     """
+    sid = ""
+    transport = current_transport() or _stdio_transport
     if obj.get("method") == "event":
         sid = ((obj.get("params") or {}).get("session_id")) or ""
-        if sid and (t := (_sessions.get(sid) or {}).get("transport")) is not None:
-            return t.write(obj)
+        if (
+            sid
+            and (
+                session_transport := (_sessions.get(sid) or {}).get("transport")
+            )
+            is not None
+        ):
+            transport = session_transport
 
-    return (current_transport() or _stdio_transport).write(obj)
+    if sid:
+        return _session_event_hub.write_then_publish(
+            sid,
+            obj,
+            lambda: transport.write(obj),
+        )
+    return transport.write(obj)
+
+
+def subscribe_session_events(
+    session_id: str,
+    subscriber_id: str,
+    sink: Callable[[SessionEventDelivery], None],
+    *,
+    max_queue: int = 256,
+) -> SessionEventSubscription:
+    """Attach a bounded observer without changing the session's transport."""
+
+    return _session_event_hub.subscribe(
+        session_id,
+        subscriber_id,
+        sink,
+        max_queue=max_queue,
+    )
 
 
 def _event_frame(event: str, sid: str, payload: dict | None = None) -> dict:

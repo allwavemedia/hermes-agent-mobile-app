@@ -1,10 +1,10 @@
 # Hermes Android Remote Control — Development Handoff
 
-Last refreshed: 2026-07-26 05:27 EDT
+Last refreshed: 2026-07-26 05:45 EDT
 
 Refresh owner: the active implementation agent
 
-Status: implementation authorized; Milestone 1 complete, Milestone 2 / Task 4 next
+Status: implementation authorized; Milestone 2 / Task 4 commit-ready
 
 This is the canonical restart document for the implementation phase. It is intentionally operational and must describe the repository as it exists, not as the plan expects it to exist.
 
@@ -85,10 +85,13 @@ Task 3 dependency decision: use `canonicalize@3.0.0` (npm, RFC 8785 Appendix G i
 
 Task 3 delivered shared RFC 8785/ES256 vectors, canonical hashes, strict protected algorithm/type and public-key checks, exact computer/device/session target binding, expiry/future-clock rejection, capability-stale rejection, low-risk-only offline prompt queueing, foreground/unlock/biometric step-up policy, and fail-closed unknown-message handling in both runtimes. Runtime crypto adapter failures cannot authorize.
 
+Task 4 delivered a bounded asynchronous listener queue per `(sessionId, subscriberId)`, independent deep-copied deliveries, exception isolation, one reset-required signal on overflow, and server publication only after the unchanged local transport write. A listener never replaces `session["transport"]` or runs inline on the agent path.
+
 ## Current work and next exact steps
 
-1. Push the Task 3 commit and this documentation checkpoint to draft PR #2.
-2. Begin Task 4 by reading current `tui_gateway/transport.py`, `tui_gateway/server.py`, their focused tests/instructions, and then write the listener-hub tests for the intended RED.
+1. Review the Task 4 diff, run `git diff --check`, and commit atomically as `feat(tui-gateway): add isolated session event listeners`.
+2. Push the commit and handoff checkpoint to draft PR #2.
+3. Begin Task 5 by reading current snapshot/session/event representations and writing adapter/normalization fixtures before production code.
 
 ## Latest verification evidence
 
@@ -136,6 +139,15 @@ Task 3 delivered shared RFC 8785/ES256 vectors, canonical hashes, strict protect
 | 2026-07-26 05:24 EDT | Exact target-context tests | Intended RED then GREEN: both runtimes now reject a signed device/session target when caller omits either binding |
 | 2026-07-26 05:25 EDT | Final Task 3 commit gate | GREEN: protocol 5 files / 29 tests plus type/lint/schema gate; root JavaScript 9 tests; Python Ruff/ty clean and 26 focused tests; `git diff --check` clean except expected line-ending notices |
 | 2026-07-26 05:26 EDT | Task 3 atomic commit | `daca7c231` — `feat(remote-protocol): bind signed capabilities and risk` |
+| 2026-07-26 05:28 EDT | Push / draft PR checkpoint | `e886b69bb` is on `origin/feat/remote-control-protocol-v1`; fork draft PR #2 remains open and stacked on the planning branch |
+| 2026-07-26 05:33 EDT | Task 4 canonical focused test | Intended RED: 1 file / 4 failed assertions because the listener hub and server registration API do not exist |
+| 2026-07-26 05:36 EDT | Task 4 canonical focused test after minimal implementation | GREEN: 1 file / 4 tests; local transport identity/order, asynchronous two-subscriber copies, exception isolation, overflow reset |
+| 2026-07-26 05:37 EDT | Task 4 Ruff/ty | GREEN for listener hub, server integration, and focused tests |
+| 2026-07-26 05:39 EDT | Canonical Task 4 regression run | New hub and protocol files passed; existing reasoning-scope file could not collect because Windows `env -i` strips home-resolution variables. Wrapper exit 1; no product assertion failed. |
+| 2026-07-26 05:40 EDT | Direct focused regression diagnostic | GREEN: 3 files / 109 tests, including reasoning session scope |
+| 2026-07-26 05:42 EDT | Concurrent local/remote ordering test | Intended RED: local transport order was `[1, 2]` while the listener observed `[2, 1]` under racing writers |
+| 2026-07-26 05:43 EDT | Per-session write/publish ordering lock | GREEN: focused hub 5 tests; Ruff and ty clean |
+| 2026-07-26 05:44 EDT | Final Task 4 canonical focused gate | GREEN exit 0: 1 file / 5 tests; `git diff --check` clean except expected line-ending notices |
 
 Tooling note: Hermes intentionally blocks ordinary wheel/sdist builds. A wheel smoke attempt failed at the repository's explicit distribution guard before packaging, so supported editable/source-install verification is authoritative for this slice.
 
